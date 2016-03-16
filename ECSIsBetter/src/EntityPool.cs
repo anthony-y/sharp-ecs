@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace ECSIsBetter
 {
     /// <summary>
-    /// Accidental v2 :3
+    /// This is now actually an object pool, not just a collection of instances.
     /// </summary>
     public class EntityPool
     {
@@ -54,7 +54,7 @@ namespace ECSIsBetter
                 newEntity = _cachedEntities[lastEnt];
                 _cachedEntities.Remove(newEntity);
 
-                newEntity.Tag = entityTag;
+                //newEntity.Tag = entityTag;
                 newEntity.OwnerPool = this;
             } else
             {
@@ -69,7 +69,7 @@ namespace ECSIsBetter
 
         public void RemoveEntity(Entity entity)
         {
-            entity.Reset();
+            //entity.Reset();
             entity.RemoveAllComponents();
 
             if (_cachedEntities.Count < MAX_CACHED_ENTITIES)

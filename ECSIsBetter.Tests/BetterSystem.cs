@@ -17,11 +17,6 @@ namespace ECSIsBetter.Tests
             
         }
 
-        public void OnCompatibleEntityChanged(Entity sender, IComponent component)
-        {
-            Console.WriteLine(sender.Tag + " was changed or something :P");
-        }
-
         public override void Draw()
         {
             
