@@ -8,7 +8,7 @@ using ECSIsBetter;
 
 namespace ECSIsBetter.Tests
 {
-    class BetterComponent
+    public class BetterComponent
         : IComponent
     {
 

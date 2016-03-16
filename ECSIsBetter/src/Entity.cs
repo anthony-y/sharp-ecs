@@ -17,11 +17,26 @@ namespace ECSIsBetter
 
         internal List<IComponent> Components { get; set; }
 
+        private void DefaultHandlers()
+        {
+            ComponentAdded = (Entity entity, IComponent component) =>
+            {
+                Console.WriteLine("Component was added to \"" + entity.Tag + "\".");
+            };
+
+            ComponentRemoved = (Entity entity, IComponent component) =>
+            {
+                Console.WriteLine("Component was removed from \"" + entity.Tag + "\".");
+            };
+        }
+
         public Entity(string tag)
         {
             Tag = tag;
 
             Components = new List<IComponent>();
+
+            DefaultHandlers();
         }
 
         public Entity(string tag, EntityPool pool)
@@ -30,6 +45,8 @@ namespace ECSIsBetter
             OwnerPool = pool;
 
             Components = new List<IComponent>();
+
+            DefaultHandlers();
         }
 
         public IComponent AddComponent(IComponent component)
@@ -52,7 +69,7 @@ namespace ECSIsBetter
 
         public T GetComponent<T>() where T : IComponent
         {
-           return (T)Components.FirstOrDefault(ent => ent.GetType() == typeof(T));
+            return (T)Components.FirstOrDefault(ent => ent.GetType() == typeof(T));
         }
 
         public void RemoveAllComponents()
