@@ -44,6 +44,8 @@
     <Compile Include="Source\Entity.cs" />
     <Compile Include="Source\EntityPool.cs" />
     <Compile Include="Source\EntitySystem.cs" />
+    <Compile Include="Source\Exceptions\ComponentNotFoundException.cs" />
+    <Compile Include="Source\Exceptions\DuplicateEntityException.cs" />
     <Compile Include="Source\Exceptions\EntityNotFoundException.cs" />
     <Compile Include="Source\Exceptions\NullEntityPoolException.cs" />
     <Compile Include="Source\IComponent.cs" />

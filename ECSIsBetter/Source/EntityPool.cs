@@ -58,6 +58,13 @@ namespace ECSIsBetter
         {
             Entity newEntity = null;
 
+            var tagMatch = this.Entities.FirstOrDefault(ent => ent.Tag == entityTag);
+
+            if (tagMatch != null)
+            {
+                throw new DuplicateEntityException(this);
+            }
+
             if (_cachedEntities.Count > 0)
             { 
                 int lastEnt = _cachedEntities.Count - 1;
@@ -72,11 +79,10 @@ namespace ECSIsBetter
                     Console.WriteLine("Retrieved " + newEntity.Tag + " from cache.");
                 } else
                 {
-                    Console.WriteLine("Failed to retrieve entity from cache.");
+                    throw new EntityNotFoundException(this);
                 }
             } else
             {
-                Console.WriteLine("Created " + entityTag);
                 newEntity = new Entity(entityTag, this);
             }
 

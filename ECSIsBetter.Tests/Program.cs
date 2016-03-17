@@ -48,7 +48,7 @@ namespace ECSIsBetter.Tests
             // DO NOT make your entities like this.
             var wow = new Entity("magic");
 
-            //pool.DestroyEntity(wow); <- causes an EntityNotFoundException
+            //pool.DestroyEntity(wow); <-- causes an EntityNotFoundException
 
             Console.WriteLine();
 

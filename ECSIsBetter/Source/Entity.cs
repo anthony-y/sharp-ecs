@@ -44,7 +44,8 @@ namespace ECSIsBetter
 
         public void RemoveComponent(IComponent component)
         {
-            if (!Components.Contains(component)) return;
+            if (!Components.Contains(component))
+                throw new ComponentNotFoundException(this);
 
             Components.Remove(component);
 
