@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using ECSIsBetter.Exceptions;
+
 namespace ECSIsBetter
 {
     public class Entity
@@ -17,26 +19,11 @@ namespace ECSIsBetter
 
         internal List<IComponent> Components { get; set; }
 
-        private void DefaultHandlers()
-        {
-            ComponentAdded = (Entity entity, IComponent component) =>
-            {
-                Console.WriteLine("Component was added to \"" + entity.Tag + "\".");
-            };
-
-            ComponentRemoved = (Entity entity, IComponent component) =>
-            {
-                Console.WriteLine("Component was removed from \"" + entity.Tag + "\".");
-            };
-        }
-
         public Entity(string tag)
         {
             Tag = tag;
 
             Components = new List<IComponent>();
-
-            DefaultHandlers();
         }
 
         public Entity(string tag, EntityPool pool)
@@ -45,15 +32,12 @@ namespace ECSIsBetter
             OwnerPool = pool;
 
             Components = new List<IComponent>();
-
-            DefaultHandlers();
         }
 
         public IComponent AddComponent(IComponent component)
         {
             Components.Add(component);
-
-            ComponentAdded(this, component);
+            if (ComponentAdded != null) ComponentAdded(this, component);
 
             return component;
         }
@@ -64,12 +48,17 @@ namespace ECSIsBetter
 
             Components.Remove(component);
 
-            ComponentRemoved(this, component);
+            if (ComponentRemoved != null) ComponentRemoved(this, component);
         }
 
         public T GetComponent<T>() where T : IComponent
         {
             return (T)Components.FirstOrDefault(ent => ent.GetType() == typeof(T));
+        }
+
+        public IComponent LastComponent()
+        {
+            return this.Components.Last();
         }
 
         public void RemoveAllComponents()
@@ -83,6 +72,24 @@ namespace ECSIsBetter
 
             this.Tag = string.Empty;
             this.OwnerPool = null;
+        }
+
+        public List<IComponent> GetAllComponents()
+        {
+            return this.Components;
+        }
+
+        public void MoveTo(EntityPool pool)
+        {
+            if (pool != null)
+            {
+                pool.AddEntity(this);
+                this.OwnerPool.DestroyEntity(this);
+                this.OwnerPool = pool;
+            } else
+            {
+                throw new NullEntityPoolException(pool);
+            }
         }
 
     }

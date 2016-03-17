@@ -17,6 +17,8 @@ namespace ECSIsBetter.Tests
             
         }
 
+        protected override List<Entity> CompatibleEntities { get; set; }
+        
         public override void Draw()
         {
             

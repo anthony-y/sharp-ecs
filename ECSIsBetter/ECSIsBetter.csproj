@@ -41,11 +41,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="src\Entity.cs" />
-    <Compile Include="src\EntityPool.cs" />
-    <Compile Include="src\EntitySystem.cs" />
-    <Compile Include="src\IComponent.cs" />
+    <Compile Include="Source\Entity.cs" />
+    <Compile Include="Source\EntityPool.cs" />
+    <Compile Include="Source\EntitySystem.cs" />
+    <Compile Include="Source\Exceptions\EntityNotFoundException.cs" />
+    <Compile Include="Source\Exceptions\NullEntityPoolException.cs" />
+    <Compile Include="Source\IComponent.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

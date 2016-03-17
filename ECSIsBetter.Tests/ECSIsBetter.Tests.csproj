@@ -53,7 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ECSIsBetter\ECSIsBetter.csproj">
-      <Project>{342cc312-0d53-48f4-b9e6-c2f0c2b55d82}</Project>
+      <Project>{085bc590-ea90-4ca6-8540-f61299c562ac}</Project>
       <Name>ECSIsBetter</Name>
     </ProjectReference>
   </ItemGroup>
