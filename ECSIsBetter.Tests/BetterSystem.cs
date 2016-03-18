@@ -17,17 +17,20 @@ namespace ECSIsBetter.Tests
 
         }
 
-        public override void Initialize()
+        public void Initialize()
         {
             Console.WriteLine("Hi from test system.");
         }
 
-        public override void Update()
+        public void Update()
         {
-
+            foreach (var i in CompatibleEntities)
+            {
+                Console.WriteLine("Compatible Entity: " + i.Tag);
+            }
         }
 
-        public override void Draw()
+        public void Draw()
         {
 
         }

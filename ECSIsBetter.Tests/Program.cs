@@ -14,13 +14,34 @@ namespace ECSIsBetter.Tests
     {
         static void Main(string[] args)
         {
-            //var pool = new EntityPool("gr8 pool");
+            // SystemsTest();
+            // ComponentOwnerTest();
+            // GameLoopTest();
 
-            //SystemsTest();
-            ComponentOwnerTest();
+            ComponentMoveTest();
 
             // Done.
             Console.ReadKey();
+        }
+
+        static void ComponentMoveTest()
+        {
+            var pool = EntityPool.New("My Amazing Pool");
+
+            var entity = pool.CreateEntity("My Amazing Entity");
+            var entity2 = pool.CreateEntity("My Other Amazing Entity");
+
+            var component = new BetterComponent();
+            entity.AddComponent(component);
+
+            Console.WriteLine("Entity1 component count: " + entity.GetAllComponents().Count);
+
+            entity.MoveComponent(component, entity2);
+
+            Console.WriteLine("Entity1 component count: " + entity.GetAllComponents().Count);
+            Console.WriteLine("Entity2 component count: " + entity2.GetAllComponents().Count);
+
+            // It works :3
         }
 
         static void ComponentOwnerTest()
@@ -34,6 +55,24 @@ namespace ECSIsBetter.Tests
             // Yay
             Console.WriteLine("Component owner should be \"My Entity\"... it's actually: " + entity.GetComponent<BetterComponent>().Owner.Tag);
 
+        }
+
+        static void GameLoopTest()
+        {
+            var pool1 = EntityPool.New("My Pool");
+            var system = new BetterSystem(pool1);
+
+            var entity = new Entity("My Entity");
+
+            pool1 += entity;
+
+            // Simulate a game loop
+            while (true)
+            {
+                system.Update();
+                
+                System.Threading.Thread.Sleep(100);
+            }
         }
 
         static void SetHandlers(params EntityPool[] pools)

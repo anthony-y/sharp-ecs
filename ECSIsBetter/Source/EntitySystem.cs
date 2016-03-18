@@ -42,12 +42,5 @@ namespace ECSIsBetter
             Console.WriteLine("EntitySystem refreshed because an entity was removed from " + _ownerPool.Name);
 #endif
         }
-
-        public abstract void Initialize();
-
-        public abstract void Update();
-
-        public abstract void Draw();
-
     }
 }
