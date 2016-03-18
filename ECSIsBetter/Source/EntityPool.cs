@@ -9,7 +9,7 @@ using ECSIsBetter.Exceptions;
 namespace ECSIsBetter
 {
     /// <summary>
-    /// This is now actually an object pool, not just a collection of instances.
+    /// The object that managed all your game Entities.
     /// </summary>
     public class EntityPool
     {
@@ -27,14 +27,20 @@ namespace ECSIsBetter
             private set { _activeEntities = value; }
         }
 
+        public Stack<Entity> CachedEntities
+        {
+            get { return _cachedEntities; }
+            private set { _cachedEntities = value; }
+        }
+
         public string Name { get; set; }
 
+        // How many Entites the cache can store at a time.
         private readonly int MAX_CACHED_ENTITIES = 5;
 
-        public EntityPool()
+        public static EntityPool New(string name)
         {
-            _activeEntities = new List<Entity>();
-            _cachedEntities = new Stack<Entity>();
+            return new EntityPool(name);
         }
 
         public EntityPool(string name)
@@ -42,7 +48,7 @@ namespace ECSIsBetter
             _activeEntities = new List<Entity>();
             _cachedEntities = new Stack<Entity>();
 
-            Name = name;
+            if (name != null) Name = name;
         }
 
         public Entity AddEntity(Entity entity)
@@ -50,10 +56,15 @@ namespace ECSIsBetter
             _activeEntities.Add(entity);
 
             if (EntityAdded != null) EntityAdded(this, entity);
-
+            
             return entity;
         }
 
+        /// <summary>
+        /// Creates a new Entity with "entityTag", adds it to active Entities and returns it.
+        /// </summary>
+        /// <param name="entityTag"></param>
+        /// <returns>Final Entity</returns>
         public Entity CreateEntity(string entityTag)
         {
             Entity newEntity = null;
@@ -66,9 +77,7 @@ namespace ECSIsBetter
             }
 
             if (_cachedEntities.Count > 0)
-            { 
-                int lastEnt = _cachedEntities.Count - 1;
-
+            {
                 newEntity = _cachedEntities.Pop();
                 _activeEntities.Add(newEntity);
 
@@ -84,6 +93,7 @@ namespace ECSIsBetter
             } else
             {
                 newEntity = new Entity(entityTag, this);
+                Console.WriteLine("Made instance because nothing in cache!");
             }
 
             _activeEntities.Add(newEntity);
@@ -93,6 +103,11 @@ namespace ECSIsBetter
             return newEntity;
         }
 
+        /// <summary>
+        /// Adds an Entity to the cache to be re-used if cachedEntities isn't full.
+        /// If the cache is full, just remove anyway.
+        /// </summary>
+        /// <param name="entity"></param>
         public void DestroyEntity(Entity entity)
         {
             var held = entity;
@@ -118,6 +133,20 @@ namespace ECSIsBetter
             if (EntityRemoved != null) EntityRemoved(this, held);
         }
 
+        /// <summary>
+        /// Doesn't add Entity to cache, just removes.
+        /// </summary>
+        /// <param name="entity"></param>
+        public void UnsafeDestroyEntity(Entity entity)
+        {
+            if (entity != null)
+            {
+                _activeEntities.Remove(entity);
+                if (EntityRemoved != null) EntityRemoved(this, entity);
+            }
+            else throw new EntityNotFoundException(this);
+        }
+
         public void WipeCache()
         {
             _cachedEntities.Clear();
@@ -126,6 +155,37 @@ namespace ECSIsBetter
         public void WipeEntities()
         {
             _activeEntities.Clear();
+        }
+
+        /// <summary>
+        /// Operator overload to let you do "pool += entity" to add an Entity to the pool.
+        /// </summary>
+        /// <param name="pool"></param>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public static EntityPool operator + (EntityPool pool, Entity entity)
+        {
+            pool.AddEntity(entity);
+
+            return pool;
+        }
+
+        /// <summary>
+        /// Operator overload to let you do "pool -= entity" to remove an Entity from the pool.
+        /// </summary>
+        /// <param name="pool"></param>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public static EntityPool operator - (EntityPool pool, Entity entity)
+        {
+            if (entity != null)
+            {
+                pool.DestroyEntity(entity);
+                return pool;
+            } else
+            {
+                throw new EntityNotFoundException(pool);
+            }
         }
 
     }

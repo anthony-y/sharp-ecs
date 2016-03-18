@@ -14,24 +14,63 @@ namespace ECSIsBetter.Tests
     {
         static void Main(string[] args)
         {
-            var pool = new EntityPool("GenericPool");
-            var pool2 = new EntityPool("NotGenericPool");
+            //var pool = new EntityPool("gr8 pool");
 
-            // Caching tests.
-            //CachingTests(pool);
-
-            var entity = pool.CreateEntity("Player");
-
-            Console.WriteLine("Current entity pool: " + entity.OwnerPool.Name);
-
-            Console.ReadKey();
-
-            entity.MoveTo(pool2);
-
-            Console.WriteLine("Current entity pool: " + entity.OwnerPool.Name);
+            //SystemsTest();
+            ComponentOwnerTest();
 
             // Done.
             Console.ReadKey();
+        }
+
+        static void ComponentOwnerTest()
+        {
+            var pool = EntityPool.New("My Pool");
+
+            var entity = pool.CreateEntity("My Entity");
+
+            entity += new BetterComponent();
+
+            // Yay
+            Console.WriteLine("Component owner should be \"My Entity\"... it's actually: " + entity.GetComponent<BetterComponent>().Owner.Tag);
+
+        }
+
+        static void SetHandlers(params EntityPool[] pools)
+        {
+            foreach (var pool in pools)
+            {
+                pool.EntityAdded += (EntityPool entPool, Entity e) =>
+                {
+                    Console.WriteLine("Entity " + e.Tag + " was added to pool " + entPool.Name + "\n");
+                };
+
+                pool.EntityRemoved += (EntityPool entPool, Entity e) =>
+                {
+                    Console.WriteLine("Entity " + e.Tag + " was removed from pool " + entPool.Name + "\n");
+                };
+            }
+        }
+
+        static void SystemsTest()
+        {
+            var pool1 = new EntityPool("Pool1");
+            var pool2 = new EntityPool("Pool2");
+
+            SetHandlers(pool1, pool2);
+
+            var entity1 = pool1.CreateEntity("Entity1");
+            var entity2 = pool2.CreateEntity("Entity2");
+
+            var system1 = new BetterSystem(pool1);
+            var system2 = new BetterSystem(pool2);
+
+            Console.WriteLine("Count before: " + system1.CompatibleEntities.Count);
+
+            var entity3 = pool1.CreateEntity("Entity3");
+
+            Console.WriteLine("Count after: " + system1.CompatibleEntities.Count);
+
         }
 
         /// <summary>
@@ -42,11 +81,13 @@ namespace ECSIsBetter.Tests
         /// <param name="pool"></param>
         static void CachingTests(EntityPool pool)
         {
+            SetHandlers(pool);
+
             var ent1 = pool.CreateEntity("Player");
             pool.DestroyEntity(ent1);
 
             // DO NOT make your entities like this.
-            var wow = new Entity("magic");
+            //var wow = new Entity("magic");
 
             //pool.DestroyEntity(wow); <-- causes an EntityNotFoundException
 
@@ -77,10 +118,19 @@ namespace ECSIsBetter.Tests
 
             Console.WriteLine();
 
+            Console.WriteLine("Cached Entity count: " + pool.CachedEntities.Count);
+
+            Console.ReadKey();
+
             pool.CreateEntity("Player7");
             pool.CreateEntity("Player8");
             pool.CreateEntity("Player9");
+
+            Console.WriteLine();
+
             pool.CreateEntity("Player10");
+
+            Console.WriteLine("Cached Entity count: " + pool.CachedEntities.Count);
 
             pool.WipeEntities();
         }

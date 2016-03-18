@@ -9,24 +9,27 @@ using ECSIsBetter;
 namespace ECSIsBetter.Tests
 {
     public class BetterSystem
-        : EntitySystem<BetterComponent>
+        : EntitySystem
     {
         public BetterSystem(EntityPool entityPool)
             : base(entityPool)
         {
-            
+
         }
 
-        protected override List<Entity> CompatibleEntities { get; set; }
-        
-        public override void Draw()
+        public override void Initialize()
         {
-            
+            Console.WriteLine("Hi from test system.");
         }
 
         public override void Update()
         {
-            
+
+        }
+
+        public override void Draw()
+        {
+
         }
     }
 }

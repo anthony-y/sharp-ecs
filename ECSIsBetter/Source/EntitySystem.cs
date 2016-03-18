@@ -6,36 +6,48 @@ using System.Threading.Tasks;
 
 namespace ECSIsBetter
 {
-    public abstract class EntitySystem<TComponent> where TComponent : IComponent
+    public abstract class EntitySystem
     {
-        protected abstract List<Entity> CompatibleEntities { get; set; }
+        public List<Entity> CompatibleEntities { get; set; }
 
-        public delegate void CompatibleEntityChanged(Entity entity, EntityPool pool);
+        private EntityPool _ownerPool;
 
-        public event CompatibleEntityChanged EntityAdded;
-        public event CompatibleEntityChanged EntityRemoved;
-
-        // Actually not used :3
-        private EntityPool _entityPool;
-
-        public EntitySystem(EntityPool entityPool)
+        public EntitySystem(EntityPool entitySource)
         {
-            CompatibleEntities = new List<Entity>();
-            _entityPool = entityPool;
+            _ownerPool = entitySource;
+            
+            _ownerPool.EntityAdded += OnCompatibleAdded;
+            _ownerPool.EntityRemoved += OnCompatibleRemoved;
 
-            // Get all the entities that carry a component of type 'TComponent'
-            // and add them all to a list.
-            foreach (var ent in _entityPool.Entities)
-            {
-                if (ent.GetComponent<TComponent>() != null)
-                {
-                    CompatibleEntities.Add(ent);
-                }
-            }
+            CompatibleEntities = _ownerPool.Entities;
         }
 
+        private void RefreshCompatible()
+        {
+            CompatibleEntities = _ownerPool.Entities;
+        }
+
+        protected void OnCompatibleAdded(EntityPool pool, Entity entity)
+        {
+            RefreshCompatible();
+#if DEBUG
+            Console.WriteLine("EntitySystem refreshed because " + entity.Tag + " was added to " + _ownerPool.Name);
+#endif
+        }
+
+        protected void OnCompatibleRemoved(EntityPool pool, Entity entity)
+        {
+            RefreshCompatible();
+#if DEBUG
+            Console.WriteLine("EntitySystem refreshed because an entity was removed from " + _ownerPool.Name);
+#endif
+        }
+
+        public abstract void Initialize();
+
         public abstract void Update();
-        
+
         public abstract void Draw();
+
     }
 }

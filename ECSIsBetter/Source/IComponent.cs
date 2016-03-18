@@ -6,5 +6,8 @@ using System.Threading.Tasks;
 
 namespace ECSIsBetter
 {
-    public interface IComponent { }
+    public interface IComponent
+    {
+        Entity Owner { get; set; }
+    }
 }
