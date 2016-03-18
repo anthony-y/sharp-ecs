@@ -8,55 +8,24 @@ namespace ECSIsBetter
 {
     public abstract class EntitySystem
     {
-        public List<Entity> CompatibleEntities { get; set; }
+        public EntityGroup Group { get; set; }
 
-        /// <summary>
-        /// The EntityPool of which CompatibleEntities comes from.
-        /// </summary>
-        private EntityPool _compatiblePool;
-
-        public EntitySystem(EntityPool entitySource)
+        public EntitySystem(EntityGroup group)
         {
-            _compatiblePool = entitySource;
-            
-            _compatiblePool.EntityAdded += OnCompatibleAdded;
-            _compatiblePool.EntityRemoved += OnCompatibleRemoved;
+            Group = group;
 
-            CompatibleEntities = _compatiblePool.Entities;
+            Group.EntityAdded += GroupEntityAdded;
+            Group.EntityRemoved += GroupEntityRemoved;
         }
 
-        /// <summary>
-        /// Refreshes the compatible entities list to include new entities and remove old ones.
-        /// </summary>
-        private void RefreshCompatible()
+        public void GroupEntityAdded(Entity entity, EntityGroup group)
         {
-            CompatibleEntities = _compatiblePool.Entities;
+            Group = group;
         }
 
-        /// <summary>
-        /// Event Handler for EntityPool's EntityAdded event.
-        /// </summary>
-        /// <param name="pool"></param>
-        /// <param name="entity"></param>
-        protected void OnCompatibleAdded(EntityPool pool, Entity entity)
+        public void GroupEntityRemoved(Entity entity, EntityGroup group)
         {
-            RefreshCompatible();
-#if DEBUG
-            Console.WriteLine("EntitySystem refreshed because " + entity.Tag + " was added to " + _compatiblePool.Name);
-#endif
-        }
-
-        /// <summary>
-        /// Event Handler for EntityPool's EntityRemoved event.
-        /// </summary>
-        /// <param name="pool"></param>
-        /// <param name="entity"></param>
-        protected void OnCompatibleRemoved(EntityPool pool, Entity entity)
-        {
-            RefreshCompatible();
-#if DEBUG
-            Console.WriteLine("EntitySystem refreshed because an entity was removed from " + _compatiblePool.Name);
-#endif
+            Group = group;
         }
     }
 }

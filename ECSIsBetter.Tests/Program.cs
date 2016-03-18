@@ -59,20 +59,20 @@ namespace ECSIsBetter.Tests
 
         static void GameLoopTest()
         {
-            var pool1 = EntityPool.New("My Pool");
-            var system = new BetterSystem(pool1);
+            //var pool1 = EntityPool.New("My Pool");
+            //var system = new BetterSystem(pool1);
 
-            var entity = new Entity("My Entity", null);
+            //var entity = new Entity("My Entity", null);
 
-            pool1 += entity;
+            //pool1 += entity;
 
-            // Simulate a game loop
-            while (true)
-            {
-                system.Update();
+            //// Simulate a game loop
+            //while (true)
+            //{
+            //    system.Update();
                 
-                System.Threading.Thread.Sleep(100);
-            }
+            //    System.Threading.Thread.Sleep(100);
+            //}
         }
 
         static void SetHandlers(params EntityPool[] pools)
@@ -93,22 +93,22 @@ namespace ECSIsBetter.Tests
 
         static void SystemsTest()
         {
-            var pool1 = new EntityPool("Pool1");
-            var pool2 = new EntityPool("Pool2");
+            //var pool1 = new EntityPool("Pool1");
+            //var pool2 = new EntityPool("Pool2");
 
-            SetHandlers(pool1, pool2);
+            //SetHandlers(pool1, pool2);
 
-            var entity1 = pool1.CreateEntity("Entity1");
-            var entity2 = pool2.CreateEntity("Entity2");
+            //var entity1 = pool1.CreateEntity("Entity1");
+            //var entity2 = pool2.CreateEntity("Entity2");
 
-            var system1 = new BetterSystem(pool1);
-            var system2 = new BetterSystem(pool2);
+            //var system1 = new BetterSystem(pool1);
+            //var system2 = new BetterSystem(pool2);
 
-            Console.WriteLine("Count before: " + system1.CompatibleEntities.Count);
+            //Console.WriteLine("Count before: " + system1.CompatibleEntities.Count);
 
-            var entity3 = pool1.CreateEntity("Entity3");
+            //var entity3 = pool1.CreateEntity("Entity3");
 
-            Console.WriteLine("Count after: " + system1.CompatibleEntities.Count);
+            //Console.WriteLine("Count after: " + system1.CompatibleEntities.Count);
 
         }
 

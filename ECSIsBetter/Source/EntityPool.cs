@@ -50,7 +50,7 @@ namespace ECSIsBetter
             return new EntityPool(name);
         }
 
-        public EntityPool(string name)
+        private EntityPool(string name)
         {
             _activeEntities = new List<Entity>();
             _cachedEntities = new Stack<Entity>();

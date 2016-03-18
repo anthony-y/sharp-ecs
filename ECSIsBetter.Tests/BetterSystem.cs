@@ -11,7 +11,7 @@ namespace ECSIsBetter.Tests
     public class BetterSystem
         : EntitySystem
     {
-        public BetterSystem(EntityPool entityPool)
+        public BetterSystem(EntityGroup entityPool)
             : base(entityPool)
         {
 
@@ -24,7 +24,7 @@ namespace ECSIsBetter.Tests
 
         public void Update()
         {
-            foreach (var i in CompatibleEntities)
+            foreach (var i in Group.Collection)
             {
                 Console.WriteLine("Compatible Entity: " + i.Tag);
             }

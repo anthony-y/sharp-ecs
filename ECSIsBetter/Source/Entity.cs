@@ -34,7 +34,7 @@ namespace ECSIsBetter
         /// </summary>
         internal List<IComponent> Components { get; set; }
 
-        public Entity(string tag, EntityPool pool)
+        internal Entity(string tag, EntityPool pool)
         {   
             Tag = tag;
 
