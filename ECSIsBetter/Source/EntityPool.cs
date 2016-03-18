@@ -38,6 +38,13 @@ namespace ECSIsBetter
         // How many Entites the cache can store at a time.
         private readonly int MAX_CACHED_ENTITIES = 5;
 
+        /// <summary>
+        /// Creates and returns a new instance of EntityPool
+        /// (it looks prettier than "var pool = new EntityPool("Name");"
+        /// also less code) :3
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public static EntityPool New(string name)
         {
             return new EntityPool(name);
@@ -51,6 +58,11 @@ namespace ECSIsBetter
             if (name != null) Name = name;
         }
 
+        /// <summary>
+        /// Adds an already existing instance of Entity to the pool.
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
         public Entity AddEntity(Entity entity)
         {
             _activeEntities.Add(entity);
@@ -85,7 +97,9 @@ namespace ECSIsBetter
                 {
                     newEntity.Tag = entityTag;
                     newEntity.OwnerPool = this;
+#if DEBUG
                     Console.WriteLine("Retrieved " + newEntity.Tag + " from cache.");
+#endif
                 } else
                 {
                     throw new EntityNotFoundException(this);
@@ -93,7 +107,9 @@ namespace ECSIsBetter
             } else
             {
                 newEntity = new Entity(entityTag, this);
-                Console.WriteLine("Made instance because nothing in cache!");
+#if DEBUG
+                Console.WriteLine("Created new instance because the cache was empty.");
+#endif
             }
 
             _activeEntities.Add(newEntity);
@@ -105,13 +121,17 @@ namespace ECSIsBetter
 
         /// <summary>
         /// Adds an Entity to the cache to be re-used if cachedEntities isn't full.
-        /// If the cache is full, just remove anyway.
+        /// If the cache is full, just remove completely.
         /// </summary>
         /// <param name="entity"></param>
         public void DestroyEntity(Entity entity)
         {
+            // Keep a copy of the entity so that when EntityRemoved is called,
+            // it still has the tag and stuff.
             var held = entity;
 
+            // Reset the Entity.
+            // See Entity.cs
             entity.Reset();
 
             if (_activeEntities.Contains(entity))
@@ -134,7 +154,7 @@ namespace ECSIsBetter
         }
 
         /// <summary>
-        /// Doesn't add Entity to cache, just removes.
+        /// Doesn't add Entity to cache, just removes completely.
         /// </summary>
         /// <param name="entity"></param>
         public void UnsafeDestroyEntity(Entity entity)
@@ -147,11 +167,17 @@ namespace ECSIsBetter
             else throw new EntityNotFoundException(this);
         }
 
+        /// <summary>
+        /// Clears the cached Entities stack.
+        /// </summary>
         public void WipeCache()
         {
             _cachedEntities.Clear();
         }
 
+        /// <summary>
+        /// Clears the active Entities list.
+        /// </summary>
         public void WipeEntities()
         {
             _activeEntities.Clear();

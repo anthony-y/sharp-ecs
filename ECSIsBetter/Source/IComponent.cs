@@ -8,6 +8,9 @@ namespace ECSIsBetter
 {
     public interface IComponent
     {
+        /// <summary>
+        /// Lets you do cool stuff like accessing the component owner's other components.
+        /// </summary>
         Entity Owner { get; set; }
     }
 }

@@ -62,7 +62,7 @@ namespace ECSIsBetter.Tests
             var pool1 = EntityPool.New("My Pool");
             var system = new BetterSystem(pool1);
 
-            var entity = new Entity("My Entity");
+            var entity = new Entity("My Entity", null);
 
             pool1 += entity;
 

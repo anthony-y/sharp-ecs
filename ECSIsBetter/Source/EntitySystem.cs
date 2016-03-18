@@ -10,36 +10,52 @@ namespace ECSIsBetter
     {
         public List<Entity> CompatibleEntities { get; set; }
 
-        private EntityPool _ownerPool;
+        /// <summary>
+        /// The EntityPool of which CompatibleEntities comes from.
+        /// </summary>
+        private EntityPool _compatiblePool;
 
         public EntitySystem(EntityPool entitySource)
         {
-            _ownerPool = entitySource;
+            _compatiblePool = entitySource;
             
-            _ownerPool.EntityAdded += OnCompatibleAdded;
-            _ownerPool.EntityRemoved += OnCompatibleRemoved;
+            _compatiblePool.EntityAdded += OnCompatibleAdded;
+            _compatiblePool.EntityRemoved += OnCompatibleRemoved;
 
-            CompatibleEntities = _ownerPool.Entities;
+            CompatibleEntities = _compatiblePool.Entities;
         }
 
+        /// <summary>
+        /// Refreshes the compatible entities list to include new entities and remove old ones.
+        /// </summary>
         private void RefreshCompatible()
         {
-            CompatibleEntities = _ownerPool.Entities;
+            CompatibleEntities = _compatiblePool.Entities;
         }
 
+        /// <summary>
+        /// Event Handler for EntityPool's EntityAdded event.
+        /// </summary>
+        /// <param name="pool"></param>
+        /// <param name="entity"></param>
         protected void OnCompatibleAdded(EntityPool pool, Entity entity)
         {
             RefreshCompatible();
 #if DEBUG
-            Console.WriteLine("EntitySystem refreshed because " + entity.Tag + " was added to " + _ownerPool.Name);
+            Console.WriteLine("EntitySystem refreshed because " + entity.Tag + " was added to " + _compatiblePool.Name);
 #endif
         }
 
+        /// <summary>
+        /// Event Handler for EntityPool's EntityRemoved event.
+        /// </summary>
+        /// <param name="pool"></param>
+        /// <param name="entity"></param>
         protected void OnCompatibleRemoved(EntityPool pool, Entity entity)
         {
             RefreshCompatible();
 #if DEBUG
-            Console.WriteLine("EntitySystem refreshed because an entity was removed from " + _ownerPool.Name);
+            Console.WriteLine("EntitySystem refreshed because an entity was removed from " + _compatiblePool.Name);
 #endif
         }
     }
