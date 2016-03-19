@@ -1,9 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 using ECSIsBetter;
-
 using ECSIsBetter.Samples.Components;
 using ECSIsBetter.Samples.Systems;
 
@@ -14,15 +15,19 @@ namespace ECSIsBetter.Samples
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
+        KeyboardState keyboard;
+        KeyboardState previousKeyboard;
+
         EntityPool entityPool;
 
-        EntityGroup renderGroup;
+        EntityGroup renderableGroup;
         EntityGroup controllableGroup;
 
         GraphicsSystem graphicsSystem;
         ControllerSystem controllerSystem;
 
         Entity playerEntity;
+        Entity hostileEntity;
 
         public Game()
         {
@@ -34,23 +39,29 @@ namespace ECSIsBetter.Samples
         {
             entityPool = EntityPool.New("EntityPool");
 
-            renderGroup = EntityGroup.New("GraphicsGroup");
-            controllableGroup = EntityGroup.New("ControllableGroup");
+            controllableGroup = EntityGroup.New("ControllableGroup", new ControllerComponent());
+            renderableGroup = EntityGroup.New("RenderGroup", new GraphicsComponent());
 
+            hostileEntity = entityPool.CreateEntity("HostileEntity");
             playerEntity = entityPool.CreateEntity("Player");
 
-            playerEntity += new ControllerComponent();
             playerEntity += new TransformComponent();
-            playerEntity += new GraphicsComponent();
+            hostileEntity += new TransformComponent();
 
-            playerEntity.GetComponent<TransformComponent>().Position = new Vector2(10, 20);
+            controllableGroup.AddDependency(playerEntity);
+            renderableGroup.AddDependency(playerEntity);
+
+            controllableGroup.AddDependency(hostileEntity);
+            renderableGroup.AddDependency(hostileEntity);
+
             playerEntity.GetComponent<GraphicsComponent>().Texture = Content.Load<Texture2D>("Sprite");
+            playerEntity.GetComponent<TransformComponent>().Position = new Vector2(10, 20);
 
-            renderGroup.AddEntity(playerEntity);
-            controllableGroup.AddEntity(playerEntity);
+            hostileEntity.GetComponent<GraphicsComponent>().Texture = Content.Load<Texture2D>("Sprite");
+            hostileEntity.GetComponent<TransformComponent>().Position = new Vector2(50, 20);
 
-            graphicsSystem = new GraphicsSystem(renderGroup);
             controllerSystem = new ControllerSystem(controllableGroup);
+            graphicsSystem = new GraphicsSystem(renderableGroup);
 
             base.Initialize();
         }
@@ -59,7 +70,6 @@ namespace ECSIsBetter.Samples
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            
         }
 
         protected override void UnloadContent()
@@ -69,9 +79,19 @@ namespace ECSIsBetter.Samples
 
         protected override void Update(GameTime gameTime)
         {
-            if (Keyboard.GetState().IsKeyDown(Keys.Escape)) Exit();
+            keyboard = Keyboard.GetState();
+
+            if (keyboard.IsKeyDown(Keys.Escape)) Exit();
+
+            if (keyboard.IsKeyDown(Keys.R) && previousKeyboard.IsKeyUp(Keys.R) && entityPool.Entities.Contains(hostileEntity))
+            {
+                //entityPool.UnsafeDestroyEntity(playerEntity);
+                entityPool.DestroyEntity(hostileEntity);
+            }
 
             controllerSystem.Update(gameTime);
+
+            previousKeyboard = keyboard;
 
             base.Update(gameTime);
         }

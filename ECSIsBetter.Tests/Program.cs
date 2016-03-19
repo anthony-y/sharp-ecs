@@ -17,8 +17,9 @@ namespace ECSIsBetter.Tests
             // SystemsTest();
             // ComponentOwnerTest();
             // GameLoopTest();
+            //ComponentMoveTest();
 
-            ComponentMoveTest();
+            CachingTests(EntityPool.New("My gr9 Pool"));
 
             // Done.
             Console.ReadKey();

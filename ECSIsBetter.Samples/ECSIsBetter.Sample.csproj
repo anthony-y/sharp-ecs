@@ -6,7 +6,7 @@
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{12C1AF6D-3B23-4F8F-8228-7852EE90E7EA}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ECSIsBetter.Samples</RootNamespace>
     <AssemblyName>ECSIsBetter.Samples</AssemblyName>

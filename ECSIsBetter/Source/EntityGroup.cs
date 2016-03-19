@@ -15,8 +15,9 @@ namespace ECSIsBetter
 
         public string Name { get; set; }
 
-        public delegate void GroupChanged(Entity entity, EntityGroup group);
+        public IComponent Dependency { get; set; }
 
+        public delegate void GroupChanged(Entity entity, EntityGroup group, List<Entity> newCollection);
         public event GroupChanged EntityAdded;
         public event GroupChanged EntityRemoved;
 
@@ -25,46 +26,79 @@ namespace ECSIsBetter
             return new EntityGroup(name, entities);
         }
 
-        public static EntityGroup New(string name)
+        public static EntityGroup New(string name, IComponent dependency, params Entity[] entities)
         {
-            return new EntityGroup(name);
-        }
-
-        private EntityGroup(string name)
-        {
-            Name = name;
-
-            Collection = new List<Entity>();
+            return new EntityGroup(name, dependency, entities);
         }
 
         private EntityGroup(string name, params Entity[] entities)
         {
-            Name = name;
-
             Collection = new List<Entity>();
 
-            AddEntities(entities);
-        }
+            Name = name;
 
-        public void AddEntity(Entity entity)
-        {
-            if (entity != null)
+            Add(entities);
+
+            foreach (var entity in Collection)
             {
-                Collection.Add(entity);
-                if (EntityAdded != null) EntityAdded(entity, this);
+                entity.OwnerPool.EntityAdded += OnEntityAdded;
+                entity.OwnerPool.EntityRemoved += OnEntityRemoved;
             }
-            else throw new EntityNotFoundException(entity.OwnerPool);
         }
 
-        public void AddEntities(params Entity[] entities)
+        private EntityGroup(string name, IComponent dependency, params Entity[] entities)
+        {
+            Collection = new List<Entity>();
+
+            Name = name;
+
+            Dependency = dependency;
+
+            Add(entities);
+
+            foreach (var entity in Collection)
+            {
+                entity.OwnerPool.EntityAdded += OnEntityAdded;
+                entity.OwnerPool.EntityRemoved += OnEntityRemoved;
+            }
+        }
+
+        private void OnEntityRemoved(EntityPool pool, Entity entity)
+        {
+            RemoveEntity(entity);
+        }
+        
+        private void OnEntityAdded(EntityPool pool, Entity entity)
+        {
+            Add(entity);
+        }
+
+        public void Add(params Entity[] entities)
         {
             foreach (var i in entities)
             {
                 if (i != null)
                 {
                     Collection.Add(i);
-                    if (EntityAdded != null) EntityAdded(i, this);
+                    if (EntityAdded != null) EntityAdded(i, this, Collection);
                 } else
+                {
+                    throw new EntityNotFoundException(i.OwnerPool);
+                }
+            }
+        }
+
+        public void AddDependency(params Entity[] entities)
+        {
+            foreach (var i in entities)
+            {
+                if (i != null)
+                {
+                    i.AddComponent(Dependency);
+                    Collection.Add(i);
+                    if (EntityAdded != null) EntityAdded(i, this, Collection);
+                }
+                else
                 {
                     throw new EntityNotFoundException(i.OwnerPool);
                 }
@@ -80,7 +114,7 @@ namespace ECSIsBetter
 
             Collection.Remove(entity);
 
-            if (EntityRemoved != null) EntityRemoved(entity, this);
+            if (EntityRemoved != null) EntityRemoved(entity, this, Collection);
         }
 
     }

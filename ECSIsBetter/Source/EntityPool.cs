@@ -55,6 +55,9 @@ namespace ECSIsBetter
             _activeEntities = new List<Entity>();
             _cachedEntities = new Stack<Entity>();
 
+            EntityAdded = (EntityPool pool, Entity entity) => { };
+            EntityRemoved = (EntityPool pool, Entity entity) => { };
+
             if (name != null) Name = name;
         }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -18,6 +19,8 @@ namespace ECSIsBetter.Samples.Systems
 
         public void Draw(SpriteBatch spriteBatch)
         {
+            Console.WriteLine("Count: " + Group.Collection.Count);
+
             foreach (var entity in this.Group.Collection)
             {
                 var texture = entity.GetComponent<GraphicsComponent>().Texture;
@@ -30,6 +33,21 @@ namespace ECSIsBetter.Samples.Systems
                     Color.White
                 );
             }
+        }
+
+        public override void OnGroupEntityAdded(Entity entity, EntityGroup group, List<Entity> newCollection)
+        {
+            Console.WriteLine("EntitySystem refreshed because Entity \"" + entity.Tag + "\" was added.");
+
+            base.OnGroupEntityAdded(entity, group, newCollection);
+        }
+
+        public override void OnGroupEntityRemoved(Entity entity, EntityGroup group, List<Entity> newCollection)
+        {
+            Console.WriteLine("EntitySystem refreshed because Entity \"" + entity.Tag + "\" was removed.");
+            Console.WriteLine("EntitySystem now has " + newCollection.Count + " in group.");
+
+            base.OnGroupEntityRemoved(entity, group, newCollection);
         }
 
     }

@@ -14,18 +14,21 @@ namespace ECSIsBetter
         {
             Group = group;
 
-            Group.EntityAdded += GroupEntityAdded;
-            Group.EntityRemoved += GroupEntityRemoved;
+            Group.EntityAdded += OnGroupEntityAdded;
+            Group.EntityRemoved += OnGroupEntityRemoved;
         }
 
-        public void GroupEntityAdded(Entity entity, EntityGroup group)
+        public virtual void OnGroupEntityAdded(Entity entity, EntityGroup group, List<Entity> newCollection)
         {
             Group = group;
+            Group.Collection = newCollection;
         }
 
-        public void GroupEntityRemoved(Entity entity, EntityGroup group)
+        public virtual void OnGroupEntityRemoved(Entity entity, EntityGroup group, List<Entity> newCollection)
         {
             Group = group;
+            Group.Collection = newCollection;
+            if (Group.Collection.Contains(entity)) group.Collection.Remove(entity);
         }
     }
 }
