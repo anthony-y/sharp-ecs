@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 
 using Microsoft.Xna.Framework;
@@ -19,19 +20,20 @@ namespace ECSIsBetter.Samples.Systems
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            Console.WriteLine("Count: " + Group.Collection.Count);
-
             foreach (var entity in this.Group.Collection)
             {
-                var texture = entity.GetComponent<GraphicsComponent>().Texture;
-                var position = entity.GetComponent<TransformComponent>().Position;
+                if (entity.Tag != string.Empty)
+                {
+                    var texture = entity.GetComponent<GraphicsComponent>().Texture;
+                    var position = entity.GetComponent<TransformComponent>().Position;
 
-                spriteBatch.Draw
-                (
-                    texture,
-                    position,
-                    Color.White
-                );
+                    spriteBatch.Draw
+                    (
+                        texture,
+                        position,
+                        Color.White
+                    );
+                }
             }
         }
 

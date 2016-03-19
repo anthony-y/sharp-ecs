@@ -91,6 +91,11 @@ namespace ECSIsBetter
                 throw new DuplicateEntityException(this);
             }
 
+            if (entityTag == string.Empty || entityTag == null || entityTag.Trim() == string.Empty || entityTag.Trim() == null)
+            {
+                throw new Exception("The string you entered was blank or null.");
+            }
+                
             if (_cachedEntities.Count > 0)
             {
                 newEntity = _cachedEntities.Pop();
@@ -101,7 +106,7 @@ namespace ECSIsBetter
                     newEntity.Tag = entityTag;
                     newEntity.OwnerPool = this;
 #if DEBUG
-                    Console.WriteLine("Retrieved " + newEntity.Tag + " from cache.");
+                    Console.WriteLine($"Retrieved {newEntity.Tag} from cache.");
 #endif
                 } else
                 {
@@ -111,7 +116,7 @@ namespace ECSIsBetter
             {
                 newEntity = new Entity(entityTag, this);
 #if DEBUG
-                Console.WriteLine("Created new instance because the cache was empty.");
+                Console.WriteLine($"Created new instance for {newEntity.Tag} because the cache was empty.");
 #endif
             }
 
@@ -154,20 +159,6 @@ namespace ECSIsBetter
             }
 
             if (EntityRemoved != null) EntityRemoved(this, held);
-        }
-
-        /// <summary>
-        /// Doesn't add Entity to cache, just removes completely.
-        /// </summary>
-        /// <param name="entity"></param>
-        public void UnsafeDestroyEntity(Entity entity)
-        {
-            if (entity != null)
-            {
-                _activeEntities.Remove(entity);
-                if (EntityRemoved != null) EntityRemoved(this, entity);
-            }
-            else throw new EntityNotFoundException(this);
         }
 
         /// <summary>
@@ -216,6 +207,5 @@ namespace ECSIsBetter
                 throw new EntityNotFoundException(pool);
             }
         }
-
     }
 }

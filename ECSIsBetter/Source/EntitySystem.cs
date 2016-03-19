@@ -28,7 +28,7 @@ namespace ECSIsBetter
         {
             Group = group;
             Group.Collection = newCollection;
-            if (Group.Collection.Contains(entity)) group.Collection.Remove(entity);
+            if (Group.Collection.Contains(entity)) group.RemoveEntity(entity);
         }
     }
 }

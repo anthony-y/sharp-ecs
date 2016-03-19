@@ -18,6 +18,9 @@ namespace ECSIsBetter.Samples
         KeyboardState keyboard;
         KeyboardState previousKeyboard;
 
+        MouseState mouse;
+        MouseState previousMouse;
+
         EntityPool entityPool;
 
         EntityGroup renderableGroup;
@@ -33,6 +36,8 @@ namespace ECSIsBetter.Samples
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+
+            IsMouseVisible = true;
         }
 
         protected override void Initialize()
@@ -48,11 +53,10 @@ namespace ECSIsBetter.Samples
             playerEntity += new TransformComponent();
             hostileEntity += new TransformComponent();
 
-            controllableGroup.AddDependency(playerEntity);
-            renderableGroup.AddDependency(playerEntity);
+            controllableGroup.AddWithDependency(playerEntity);
+            renderableGroup.AddWithDependency(playerEntity);
 
-            controllableGroup.AddDependency(hostileEntity);
-            renderableGroup.AddDependency(hostileEntity);
+            renderableGroup.AddWithDependency(hostileEntity);
 
             playerEntity.GetComponent<GraphicsComponent>().Texture = Content.Load<Texture2D>("Sprite");
             playerEntity.GetComponent<TransformComponent>().Position = new Vector2(10, 20);
@@ -74,23 +78,25 @@ namespace ECSIsBetter.Samples
 
         protected override void UnloadContent()
         {
-            
+            Dispose();
         }
 
         protected override void Update(GameTime gameTime)
         {
             keyboard = Keyboard.GetState();
+            mouse = Mouse.GetState();
 
             if (keyboard.IsKeyDown(Keys.Escape)) Exit();
 
-            if (keyboard.IsKeyDown(Keys.R) && previousKeyboard.IsKeyUp(Keys.R) && entityPool.Entities.Contains(hostileEntity))
+            if (mouse.LeftButton == ButtonState.Pressed && previousMouse.LeftButton == ButtonState.Released
+                && hostileEntity.Tag != string.Empty)
             {
-                //entityPool.UnsafeDestroyEntity(playerEntity);
-                entityPool.DestroyEntity(hostileEntity);
+                hostileEntity.GetComponent<TransformComponent>().Position = new Vector2(mouse.X, mouse.Y);
             }
 
             controllerSystem.Update(gameTime);
 
+            previousMouse = mouse;
             previousKeyboard = keyboard;
 
             base.Update(gameTime);

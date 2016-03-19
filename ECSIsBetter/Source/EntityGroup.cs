@@ -79,8 +79,15 @@ namespace ECSIsBetter
             {
                 if (i != null)
                 {
-                    Collection.Add(i);
-                    if (EntityAdded != null) EntityAdded(i, this, Collection);
+                    if (i.Tag != string.Empty)
+                    {
+                        Collection.Add(i);
+                        if (EntityAdded != null) EntityAdded(i, this, Collection);
+                    } else
+                    {
+                        throw new ECSCacheException();
+                    }
+                    
                 } else
                 {
                     throw new EntityNotFoundException(i.OwnerPool);
@@ -88,7 +95,7 @@ namespace ECSIsBetter
             }
         }
 
-        public void AddDependency(params Entity[] entities)
+        public void AddWithDependency(params Entity[] entities)
         {
             foreach (var i in entities)
             {

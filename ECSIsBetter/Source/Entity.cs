@@ -168,7 +168,7 @@ namespace ECSIsBetter
         }
 
         /// <summary>
-        /// RemoveAllComponents(), reset Tag and OwnerPool.
+        /// RemoveAllComponents(), reset Tag, OwnerPool and OwnerGroup.
         /// </summary>
         public void Reset()
         {
