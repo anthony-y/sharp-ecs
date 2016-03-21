@@ -31,4 +31,41 @@ namespace ECSIsBetter
             if (Group.Collection.Contains(entity)) group.RemoveEntity(entity);
         }
     }
+
+    public abstract class GenericSystem<TComponent> where TComponent : IComponent
+    {
+        public EntityPool Pool { get; set; }
+
+        public List<Entity> Compatible { get; set; }
+
+        public GenericSystem(EntityPool pool)
+        {
+            Pool = pool;
+
+            Compatible = GetCompatibleInPool();
+
+            Pool.EntityAdded += OnPoolEntityChanged;
+            Pool.EntityRemoved += OnPoolEntityChanged;
+        }
+
+        private void OnPoolEntityChanged(EntityPool pool, Entity entity)
+        {
+            Pool = pool;
+        }
+
+        private List<Entity> GetCompatibleInPool()
+        {
+            var list = new List<Entity>();
+
+            foreach (var ent in Pool.Entities)
+            {
+                if (ent.HasComponentOfType<TComponent>())
+                {
+                    list.Add(ent);
+                }
+            }
+
+            return list;
+        }
+    }
 }

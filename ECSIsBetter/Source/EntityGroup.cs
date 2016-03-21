@@ -21,11 +21,24 @@ namespace ECSIsBetter
         public event GroupChanged EntityAdded;
         public event GroupChanged EntityRemoved;
 
+        /// <summary>
+        /// Creates and returns a new instance of EntityGroup.
+        /// </summary>
+        /// <param name="name">The name for this group. Used to tell Groups apart.</param>
+        /// <param name="entities">Optional Entities to be added to "Collection" upon creation of this.</param>
+        /// <returns>A new instance of EntityGroup</returns>
         public static EntityGroup New(string name, params Entity[] entities)
         {
             return new EntityGroup(name, entities);
         }
 
+        /// <summary>
+        /// Creates and returns a new instance of EntityGroup.
+        /// </summary>
+        /// <param name="name">The name for this group. Used to tell Groups apart.</param>
+        /// <param name="dependency">The optional Component to be added to Entities in "Collection" when "AddWithDependency" is called.</param>
+        /// <param name="entities">Optional Entities to be added to "Collection" upon creation of this.</param>
+        /// <returns>A new instance of EntityGroup</returns>
         public static EntityGroup New(string name, IComponent dependency, params Entity[] entities)
         {
             return new EntityGroup(name, dependency, entities);

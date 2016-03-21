@@ -55,6 +55,7 @@
     <Compile Include="Systems\GraphicsSystem.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="MonoGame.Framework">
       <HintPath>$(MSBuildProgramFiles32)\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
     </Reference>

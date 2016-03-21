@@ -26,7 +26,7 @@ namespace ECSIsBetter.Samples
         EntityGroup renderableGroup;
         EntityGroup controllableGroup;
 
-        GraphicsSystem graphicsSystem;
+        GenericGraphicsSystem graphicsSystem;
         ControllerSystem controllerSystem;
 
         Entity playerEntity;
@@ -44,28 +44,33 @@ namespace ECSIsBetter.Samples
         {
             entityPool = EntityPool.New("EntityPool");
 
-            controllableGroup = EntityGroup.New("ControllableGroup", new ControllerComponent());
             renderableGroup = EntityGroup.New("RenderGroup", new GraphicsComponent());
+            controllableGroup = EntityGroup.New("ControllableGroup", new ControllerComponent());
 
-            hostileEntity = entityPool.CreateEntity("HostileEntity");
             playerEntity = entityPool.CreateEntity("Player");
+            hostileEntity = entityPool.CreateEntity("HostileEntity");
 
-            playerEntity += new TransformComponent();
-            hostileEntity += new TransformComponent();
-
-            controllableGroup.AddWithDependency(playerEntity);
             renderableGroup.AddWithDependency(playerEntity);
+            controllableGroup.AddWithDependency(playerEntity);
 
             renderableGroup.AddWithDependency(hostileEntity);
 
-            playerEntity.GetComponent<GraphicsComponent>().Texture = Content.Load<Texture2D>("Sprite");
+            playerEntity += new TransformComponent();
+
+            hostileEntity += new ControllerComponent();
+            hostileEntity += new TransformComponent();
+
             playerEntity.GetComponent<TransformComponent>().Position = new Vector2(10, 20);
+            playerEntity.GetComponent<GraphicsComponent>().Texture = Content.Load<Texture2D>("Sprite");
 
+            hostileEntity.GetComponent<TransformComponent>().Position = new Vector2(350, 200);
             hostileEntity.GetComponent<GraphicsComponent>().Texture = Content.Load<Texture2D>("Sprite");
-            hostileEntity.GetComponent<TransformComponent>().Position = new Vector2(50, 20);
 
+            // Generic
+            graphicsSystem = new GenericGraphicsSystem(entityPool);
+
+            // Group
             controllerSystem = new ControllerSystem(controllableGroup);
-            graphicsSystem = new GraphicsSystem(renderableGroup);
 
             base.Initialize();
         }
@@ -91,8 +96,12 @@ namespace ECSIsBetter.Samples
             if (mouse.LeftButton == ButtonState.Pressed && previousMouse.LeftButton == ButtonState.Released
                 && hostileEntity.Tag != string.Empty)
             {
-                hostileEntity.GetComponent<TransformComponent>().Position = new Vector2(mouse.X, mouse.Y);
+                entityPool.GetEntity("HostileEntity").LastComponent().Position = new Vector2(mouse.Position.X - 16, mouse.Position.Y - 16);
+
+                //entityPool.DestroyEntity(hostileEntity);
             }
+
+            //Console.WriteLine("Count: " + entityPool.Entities.Count);
 
             controllerSystem.Update(gameTime);
 

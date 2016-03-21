@@ -107,7 +107,7 @@ namespace ECSIsBetter
         /// <returns></returns>
         public T GetComponent<T>() where T : IComponent
         {
-            var match = (T)Components.FirstOrDefault(ent => ent.GetType() == typeof(T));
+            var match = Components.OfType<T>().FirstOrDefault();
 
             if (match == null) throw new ComponentNotFoundException(this);
 
@@ -150,13 +150,21 @@ namespace ECSIsBetter
             }
         }
 
+        public bool HasComponentOfType<TComponent>() where TComponent : IComponent
+        {
+            var match = Components.OfType<TComponent>().FirstOrDefault();
+
+            if (match != null) return true;
+            else return false;
+        }
+
         /// <summary>
         /// Returns the last component that was added.
         /// </summary>
-        /// <returns></returns>
-        public IComponent LastComponent()
+        /// <returns>The last component of the Components list.</returns>
+        public dynamic LastComponent()
         {
-            return this.Components.Last();
+            return Components.Last();
         }
 
         /// <summary>

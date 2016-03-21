@@ -53,4 +53,31 @@ namespace ECSIsBetter.Samples.Systems
         }
 
     }
+
+    public class GenericGraphicsSystem : GenericSystem<GraphicsComponent>
+    {
+        public GenericGraphicsSystem(EntityPool pool)
+            : base(pool)
+        {
+
+        }
+
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            foreach (var entity in Compatible)
+            {
+                var texture = entity.GetComponent<GraphicsComponent>().Texture;
+                var position = entity.GetComponent<TransformComponent>().Position;
+
+                spriteBatch.Draw
+                (
+                    texture,
+                    position,
+                    Color.White
+                );
+            }
+        }
+
+    }
+
 }

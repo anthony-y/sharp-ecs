@@ -127,6 +127,15 @@ namespace ECSIsBetter
             return newEntity;
         }
 
+        public Entity GetEntity(string entityTag)
+        {
+            var match = Entities.FirstOrDefault(ent => ent.Tag == entityTag);
+
+            if (match != null) return match;
+
+            throw new EntityNotFoundException(this);
+        }
+
         /// <summary>
         /// Adds an Entity to the cache to be re-used if cachedEntities isn't full.
         /// If the cache is full, just remove completely.
@@ -159,6 +168,19 @@ namespace ECSIsBetter
             }
 
             if (EntityRemoved != null) EntityRemoved(this, held);
+        }
+
+        public void UnsafeDestroyEntity(Entity entity)
+        {
+            if (entity != null && _activeEntities.Contains(entity))
+            {
+                _activeEntities.Remove(entity);
+                if (EntityRemoved != null) EntityRemoved(this, entity);
+            }
+            else
+            {
+                throw new EntityNotFoundException(this);
+            }
         }
 
         /// <summary>
