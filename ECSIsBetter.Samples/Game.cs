@@ -55,10 +55,11 @@ namespace ECSIsBetter.Samples
 
             renderableGroup.AddWithDependency(hostileEntity);
 
-            playerEntity += new TransformComponent();
-
+            // Using the + operator overload.
             hostileEntity += new ControllerComponent();
-            hostileEntity += new TransformComponent();
+
+            // Using the AddComponent method.
+            hostileEntity.AddComponent(new TransformComponent());
 
             playerEntity.GetComponent<TransformComponent>().Position = new Vector2(10, 20);
             playerEntity.GetComponent<GraphicsComponent>().Texture = Content.Load<Texture2D>("Sprite");

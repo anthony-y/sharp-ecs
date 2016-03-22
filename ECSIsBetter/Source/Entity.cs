@@ -44,7 +44,7 @@ namespace ECSIsBetter
 
             Components = new List<IComponent>();
         }
-
+        
         /// <summary>
         /// Checks if this already has "component"
         /// If it does, ComponentAlreadyExistsException.

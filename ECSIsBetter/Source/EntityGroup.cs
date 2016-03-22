@@ -94,8 +94,15 @@ namespace ECSIsBetter
                 {
                     if (i.Tag != string.Empty)
                     {
-                        Collection.Add(i);
-                        if (EntityAdded != null) EntityAdded(i, this, Collection);
+                        if (i.OwnerPool != null)
+                        {
+                            Collection.Add(i);
+                            if (EntityAdded != null) EntityAdded(i, this, Collection);
+                        } else
+                        {
+                            throw new IndependentEntityException(i);
+                        }
+                        
                     } else
                     {
                         throw new ECSCacheException();
