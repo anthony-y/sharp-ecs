@@ -1,3 +1,3 @@
-# ECS is Better
+# Sharp ECS
 
-Because ECS is better.
+Because ECS is way better.
