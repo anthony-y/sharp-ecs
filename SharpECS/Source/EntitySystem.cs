@@ -31,14 +31,12 @@ namespace SharpECS
             Pool = pool;
             Compatible = GetCompatibleInPool();
 
-#if DEBUG
-            Console.WriteLine($"{entity.Tag} had a component changed so {pool.Name} refreshed it's Compatible Entity list.");
-#endif
+            //Console.WriteLine($"System refreshed it's Compatible Entities because Entity \"{entity.Tag} was changed or added.");
         }
 
         private List<Entity> GetCompatibleInPool()
         {
-            return Pool.Entities.Where(ent => ent.HasComponentOfType<TComponent>()).ToList();
+            return Pool.Entities.Where(ent => ent.HasComponent<TComponent>()).ToList();
         }
     }
 }

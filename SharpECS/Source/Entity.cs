@@ -61,7 +61,6 @@ namespace SharpECS
             }
 
             Components.Add(component);
-            //if (ComponentAdded != null) ComponentAdded(this, component);
             OwnerPool.ComponentAdded(this);
 
             return component;
@@ -150,21 +149,12 @@ namespace SharpECS
             }
         }
 
-        public bool HasComponentOfType<TComponent>() where TComponent : IComponent
+        public bool HasComponent<TComponent>() where TComponent : IComponent
         {
             var match = Components.OfType<TComponent>().FirstOrDefault();
 
             if (match != null) return true;
             else return false;
-        }
-
-        /// <summary>
-        /// Returns the last component that was added.
-        /// </summary>
-        /// <returns>The last component of the Components list.</returns>
-        public dynamic LastComponent()
-        {
-            return Components.Last();
         }
 
         /// <summary>

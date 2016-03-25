@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -44,15 +45,12 @@ namespace SharpECS.Samples
             playerEntity = entityPool.CreateEntity("Player");
             hostileEntity = entityPool.CreateEntity("HostileEntity");
 
-            // Generic
             graphicsSystem = new GraphicsSystem(entityPool);
-
-            // Group
             controllerSystem = new ControllerSystem(entityPool);
 
             playerEntity += new TransformComponent();
-            playerEntity += new GraphicsComponent();
             playerEntity += new ControllerComponent();
+            playerEntity += new GraphicsComponent();
 
             hostileEntity += new GraphicsComponent();
             hostileEntity += new TransformComponent();
@@ -85,14 +83,15 @@ namespace SharpECS.Samples
             if (keyboard.IsKeyDown(Keys.Escape)) Exit();
 
             if (mouse.LeftButton == ButtonState.Pressed && previousMouse.LeftButton == ButtonState.Released
-                && hostileEntity.Tag != string.Empty)
+                && entityPool.DoesEntityExist(hostileEntity))
             {
-                entityPool.GetEntity("HostileEntity").LastComponent().Position = new Vector2(mouse.Position.X - 16, mouse.Position.Y - 16);
-
-                //entityPool.DestroyEntity(hostileEntity);
+                entityPool.GetEntity("HostileEntity").GetComponent<TransformComponent>().Position = new Vector2(mouse.Position.X - 16, mouse.Position.Y - 16);
             }
 
-            //Console.WriteLine("Count: " + entityPool.Entities.Count);
+            if (keyboard.IsKeyDown(Keys.G) && previousKeyboard.IsKeyUp(Keys.G) && hostileEntity != null)
+            {
+                entityPool.DestroyEntity(hostileEntity);
+            }
 
             controllerSystem.Update(gameTime);
 

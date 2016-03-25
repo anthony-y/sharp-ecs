@@ -130,6 +130,16 @@ namespace SharpECS
             return newEntity;
         }
 
+        public bool DoesEntityExist(string tag)
+        {
+            return Entities.FirstOrDefault(ent => ent.Tag == "HostileEntity") != null;
+        }
+
+        public bool DoesEntityExist(Entity entity)
+        {
+            return Entities.FirstOrDefault(ent => ent.Tag == entity.Tag) != null;
+        }
+
         public Entity GetEntity(string entityTag)
         {
             var match = Entities.FirstOrDefault(ent => ent.Tag == entityTag);
