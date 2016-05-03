@@ -134,7 +134,7 @@ namespace SharpECS
         }
 
         /// <summary>
-        /// MoveComponent except calls "destination.UnsafeAddComponent(component)" instead of
+        /// Identical to MoveComponent except calls "destination.UnsafeAddComponent(component)" instead of
         /// destination.AddComponent(component).
         /// </summary>
         /// <param name="component"></param>

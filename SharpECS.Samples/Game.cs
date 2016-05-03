@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Input;
 using SharpECS;
 using SharpECS.Samples.Components;
 using SharpECS.Samples.Systems;
+using System.Collections.Generic;
 
 namespace SharpECS.Samples
 {

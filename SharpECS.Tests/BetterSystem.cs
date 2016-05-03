@@ -14,11 +14,6 @@ namespace SharpECS.Tests
         public BetterSystem(EntityPool entityPool)
             : base(entityPool)
         {
-
-        }
-
-        public void Initialize()
-        {
             Console.WriteLine("Hi from test system.");
         }
 
