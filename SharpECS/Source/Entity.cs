@@ -76,7 +76,7 @@ namespace SharpECS
         public IComponent UnsafeAddComponent(IComponent component)
         {
             Components.Add(component);
-            if (ComponentAdded != null) ComponentAdded(this, component);
+            ComponentAdded?.Invoke(this, component);
             OwnerPool.ComponentAdded(this);
 
             return component;
@@ -93,7 +93,7 @@ namespace SharpECS
 
             Components.Remove(component);
 
-            if (ComponentRemoved != null) ComponentRemoved(this, component);
+            ComponentRemoved?.Invoke(this, component);
             OwnerPool.ComponentRemoved(this);
         }
 

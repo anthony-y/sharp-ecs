@@ -73,8 +73,8 @@ namespace SharpECS
         {
             _activeEntities.Add(entity);
 
-            if (EntityAdded != null) EntityAdded(this, entity);
-            
+            EntityAdded?.Invoke(this, entity);
+
             return entity;
         }
 
@@ -125,7 +125,7 @@ namespace SharpECS
 
             _activeEntities.Add(newEntity);
 
-            if (EntityAdded != null) EntityAdded(this, newEntity);
+            EntityAdded?.Invoke(this, newEntity);
 
             return newEntity;
         }
@@ -180,7 +180,7 @@ namespace SharpECS
                 throw new EntityNotFoundException(this);
             }
 
-            if (EntityRemoved != null) EntityRemoved(this, held);
+            EntityRemoved?.Invoke(this, held);
         }
 
         public void UnsafeDestroyEntity(Entity entity)
@@ -188,7 +188,7 @@ namespace SharpECS
             if (entity != null && _activeEntities.Contains(entity))
             {
                 _activeEntities.Remove(entity);
-                if (EntityRemoved != null) EntityRemoved(this, entity);
+                EntityRemoved?.Invoke(this, entity);
             }
             else
             {
@@ -214,12 +214,12 @@ namespace SharpECS
 
         internal void ComponentAdded(Entity entity)
         {
-            if (EntityComponentAdded != null) EntityComponentAdded(this, entity);
+            EntityComponentAdded?.Invoke(this, entity);
         }
 
         internal void ComponentRemoved(Entity entity)
         {
-            if (EntityComponentRemoved != null) EntityComponentRemoved(this, entity);
+            EntityComponentRemoved?.Invoke(this, entity);
         }
 
         /// <summary>
