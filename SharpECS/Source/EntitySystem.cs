@@ -31,7 +31,9 @@ namespace SharpECS
             Pool = pool;
             Compatible = GetCompatibleInPool();
 
-            //Console.WriteLine($"System refreshed it's Compatible Entities because Entity \"{entity.Tag} was changed or added.");
+#if DEBUG
+            Console.WriteLine($"System refreshed it's Compatible Entities because Entity \"{entity.Tag} was changed or added.");
+#endif
         }
 
         private List<Entity> GetCompatibleInPool()

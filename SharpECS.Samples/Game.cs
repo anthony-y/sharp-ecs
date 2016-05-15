@@ -46,9 +46,6 @@ namespace SharpECS.Samples
             playerEntity = entityPool.CreateEntity("Player");
             hostileEntity = entityPool.CreateEntity("HostileEntity");
 
-            graphicsSystem = new GraphicsSystem(entityPool);
-            controllerSystem = new ControllerSystem(entityPool);
-
             playerEntity += new TransformComponent();
             playerEntity += new ControllerComponent();
             playerEntity += new GraphicsComponent();
@@ -61,6 +58,9 @@ namespace SharpECS.Samples
 
             hostileEntity.GetComponent<TransformComponent>().Position = new Vector2(350, 200);
             hostileEntity.GetComponent<GraphicsComponent>().Texture = Content.Load<Texture2D>("Sprite");
+
+            graphicsSystem = new GraphicsSystem(entityPool);
+            controllerSystem = new ControllerSystem(entityPool);
 
             base.Initialize();
         }
@@ -86,14 +86,21 @@ namespace SharpECS.Samples
             if (mouse.LeftButton == ButtonState.Pressed && previousMouse.LeftButton == ButtonState.Released
                 && entityPool.DoesEntityExist(hostileEntity))
             {
-                entityPool.GetEntity("HostileEntity").GetComponent<TransformComponent>().Position = new Vector2(mouse.Position.X - 16, mouse.Position.Y - 16);
+                hostileEntity.GetComponent<TransformComponent>().Position = new Vector2(mouse.Position.X - 16, mouse.Position.Y - 16);
             }
 
-            if (keyboard.IsKeyDown(Keys.G) && previousKeyboard.IsKeyUp(Keys.G) && hostileEntity != null)
+            if (mouse.RightButton == ButtonState.Pressed && previousMouse.RightButton == ButtonState.Released
+                && entityPool.DoesEntityExist(hostileEntity))
             {
                 entityPool.DestroyEntity(hostileEntity);
             }
 
+#if DEBUG
+            foreach (var i in entityPool.Entities)
+            {
+                Console.WriteLine("Entity: " + i.Tag);
+            }
+#endif
             controllerSystem.Update(gameTime);
 
             previousMouse = mouse;
