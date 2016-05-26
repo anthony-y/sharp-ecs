@@ -12,7 +12,8 @@ using System.Collections.Generic;
 
 namespace SharpECS.Samples
 {
-    public class Game : Microsoft.Xna.Framework.Game
+    internal class Game 
+        : Microsoft.Xna.Framework.Game
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;

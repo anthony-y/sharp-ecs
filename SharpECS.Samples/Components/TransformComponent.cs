@@ -10,7 +10,8 @@ using Microsoft.Xna.Framework;
 
 namespace SharpECS.Samples.Components
 {
-    public class TransformComponent : IComponent
+    internal class TransformComponent 
+        : IComponent
     {
         public Entity Owner { get; set; }
         

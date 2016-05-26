@@ -10,7 +10,8 @@ using SharpECS.Samples.Components;
 
 namespace SharpECS.Samples.Systems
 {
-    public class GraphicsSystem : EntitySystem<GraphicsComponent>
+    internal class GraphicsSystem 
+        : EntitySystem<GraphicsComponent>
     {
         public GraphicsSystem(EntityPool pool)
             : base(pool)

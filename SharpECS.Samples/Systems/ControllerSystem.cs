@@ -9,7 +9,8 @@ using SharpECS.Samples.Components;
 
 namespace SharpECS.Samples.Systems
 {
-    public class ControllerSystem : EntitySystem<ControllerComponent>
+    internal class ControllerSystem 
+        : EntitySystem<ControllerComponent>
     {
         public ControllerSystem(EntityPool pool)
             : base(pool)

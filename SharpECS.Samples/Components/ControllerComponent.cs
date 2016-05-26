@@ -11,7 +11,8 @@ using Microsoft.Xna.Framework;
 
 namespace SharpECS.Samples.Components
 {
-    public class ControllerComponent : IComponent
+    internal class ControllerComponent 
+        : IComponent
     {
         public Entity Owner { get; set; }
 

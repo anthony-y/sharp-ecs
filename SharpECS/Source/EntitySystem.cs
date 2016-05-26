@@ -39,6 +39,6 @@ namespace SharpECS
         private List<Entity> GetCompatibleInPool()
         {
             return Pool.Entities.Where(ent => ent.HasComponent<TComponent>()).ToList();
-        }
+        } 
     }
 }
