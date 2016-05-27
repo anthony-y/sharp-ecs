@@ -23,7 +23,7 @@ namespace SharpECS.Samples.Systems
         {
             foreach (var entity in Compatible)
             {
-                var texture = entity.GetComponent<GraphicsComponent>().Texture;
+                var texture = GetCompatibleOn(entity).Texture;
                 var position = entity.GetComponent<TransformComponent>().Position;
 
                 spriteBatch.Draw

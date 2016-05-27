@@ -25,27 +25,13 @@ namespace SharpECS.Samples.Systems
             foreach (var entity in Compatible)
             {
                 var transform = entity.GetComponent<TransformComponent>();
-                var moveSpeed = entity.GetComponent<ControllerComponent>().MoveSpeed;
 
-                if (Keyboard.GetState().IsKeyDown(Keys.D))
-                {
-                    transform.SetX(transform.Position.X + moveSpeed * delta);
-                }
+                var moveSpeed = GetCompatibleOn(entity).MoveSpeed;
 
-                if (Keyboard.GetState().IsKeyDown(Keys.A))
-                {
-                    transform.SetX(transform.Position.X - moveSpeed * delta);
-                }
-
-                if (Keyboard.GetState().IsKeyDown(Keys.W))
-                {
-                    transform.SetY(transform.Position.Y - moveSpeed * delta);
-                }
-
-                if (Keyboard.GetState().IsKeyDown(Keys.S))
-                {
-                    transform.SetY(transform.Position.Y + moveSpeed * delta);
-                }
+                if (Keyboard.GetState().IsKeyDown(Keys.D)) { transform.SetX(transform.Position.X + moveSpeed * delta); }
+                if (Keyboard.GetState().IsKeyDown(Keys.A)) { transform.SetX(transform.Position.X - moveSpeed * delta); }
+                if (Keyboard.GetState().IsKeyDown(Keys.W)) { transform.SetY(transform.Position.Y - moveSpeed * delta); }
+                if (Keyboard.GetState().IsKeyDown(Keys.S)) { transform.SetY(transform.Position.Y + moveSpeed * delta); }
             }
         }
     }

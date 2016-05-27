@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 
 namespace SharpECS
 {
-    public abstract class EntitySystem<TComponent> where TComponent : IComponent
+    public abstract class EntitySystem<TComponent> 
+        where TComponent 
+            : IComponent
     {
         public EntityPool Pool { get; set; }
 
@@ -40,5 +42,10 @@ namespace SharpECS
         {
             return Pool.Entities.Where(ent => ent.HasComponent<TComponent>()).ToList();
         } 
+
+        protected TComponent GetCompatibleOn(Entity entity)
+        {
+            return entity.GetComponent<TComponent>();
+        }
     }
 }
