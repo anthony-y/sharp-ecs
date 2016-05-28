@@ -47,19 +47,26 @@ namespace SharpECS.Samples
             playerEntity = entityPool.CreateEntity("Player");
             hostileEntity = entityPool.CreateEntity("HostileEntity");
 
+            // Systems will refresh when new Entities have compatible components added to them.
             graphicsSystem = new GraphicsSystem(entityPool);
             controllerSystem = new ControllerSystem(entityPool);
 
-            playerEntity += new TransformComponent()
-                { Position = new Vector2(10, 20) };
-            playerEntity += new GraphicsComponent()
-                { Texture = Content.Load<Texture2D>("Sprite") };
+            // One way of adding components.
+            playerEntity += new TransformComponent() { Position = new Vector2(10, 20) };
+            playerEntity += new GraphicsComponent() { Texture = Content.Load<Texture2D>("Sprite") };
             playerEntity += new ControllerComponent();
 
-            hostileEntity += new GraphicsComponent()
-                { Texture = Content.Load<Texture2D>("Sprite") };
-            hostileEntity += new TransformComponent()
-                { Position = new Vector2(350, 200) };
+            // Alternate way.
+            hostileEntity.AddComponents
+            (
+                new GraphicsComponent() { Texture = Content.Load<Texture2D>("Sprite") },
+                new TransformComponent() { Position = new Vector2(350, 200) }
+            );
+
+            var showOffCarbonCopy = playerEntity.CarbonCopy("MadeWithCarbonCopy(TM)");
+
+            // Should be identical to Player.
+            showOffCarbonCopy.GetAllComponents().ForEach(compo => { Console.WriteLine(compo.ToString()); });
 
             base.Initialize();
         }
