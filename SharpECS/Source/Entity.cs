@@ -29,9 +29,9 @@ namespace SharpECS
         public EntityPool OwnerPool { get; set; }
         
         /// <summary>
-        /// An internal list of this Entity's components.
+        /// A list of this Entity's components.
         /// </summary>
-        internal List<IComponent> Components { get; set; }
+        public List<IComponent> Components { get; set; }
 
         internal Entity(string tag, EntityPool pool)
         {   
@@ -174,15 +174,6 @@ namespace SharpECS
 
             this.Tag = string.Empty;
             this.OwnerPool = null;
-        }
-
-        /// <summary>
-        /// Returns Components.
-        /// </summary>
-        /// <returns></returns>
-        public List<IComponent> GetAllComponents()
-        {
-            return this.Components;
         }
 
         /// <summary>
