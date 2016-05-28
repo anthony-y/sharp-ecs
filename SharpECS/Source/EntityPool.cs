@@ -132,7 +132,7 @@ namespace SharpECS
 
         public bool DoesEntityExist(string tag)
         {
-            return Entities.FirstOrDefault(ent => ent.Tag == "HostileEntity") != null;
+            return Entities.FirstOrDefault(ent => ent.Tag == tag) != null;
         }
 
         public bool DoesEntityExist(Entity entity)
