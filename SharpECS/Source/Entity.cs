@@ -186,6 +186,25 @@ namespace SharpECS
         }
 
         /// <summary>
+        /// Adds an array of components to an Entity all at once.
+        /// </summary>
+        /// <param name="components"></param>
+        public void AddComponents(params IComponent[] components)
+        {
+            Components.AddRange(components);
+        }
+
+        /// <summary>
+        /// Adds an IEnumerable of components to an Entity all at once.
+        /// Calls AddComponents(params IComponent[] components) anyway.
+        /// </summary>
+        /// <param name="components"></param>
+        public void AddComponents(IEnumerable<IComponent> components)
+        {
+            AddComponents(components);
+        }
+
+        /// <summary>
         /// Moves this Entity to another EntityPool (if it isn't null)
         /// </summary>
         /// <param name="pool"></param>
@@ -200,6 +219,20 @@ namespace SharpECS
             {
                 throw new NullEntityPoolException(pool);
             }
+        }
+
+        /// <summary>
+        /// Creates a "carbon copy" of this Entity with the tag of "newTag".
+        /// </summary>
+        /// <param name="newTag"></param>
+        /// <returns></returns>
+        public Entity CarbonCopy(string newTag)
+        {
+            var newEntity = OwnerPool.CreateEntity(newTag);
+
+            newEntity.AddComponents(Components);
+
+            return newEntity;
         }
 
         /// <summary>
