@@ -149,6 +149,12 @@ namespace SharpECS
             }
         }
 
+        /// <summary>
+        /// Checks if "this" contains a component of type "TComponent".
+        /// If it does, return true. Otherwise, return false.
+        /// </summary>
+        /// <typeparam name="TComponent"></typeparam>
+        /// <returns></returns>
         public bool HasComponent<TComponent>() where TComponent : IComponent
         {
             var match = Components.OfType<TComponent>().FirstOrDefault();
