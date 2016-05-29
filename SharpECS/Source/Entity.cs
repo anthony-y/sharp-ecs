@@ -66,19 +66,15 @@ namespace SharpECS
             return component;
         }
 
-        /// <summary>
-        /// Removes "component" if it isn't null and this has it.
-        /// </summary>
-        /// <param name="component"></param>
-        public void RemoveComponent(IComponent component)
+        public void RemoveComponent<T>() where T : IComponent
         {
-            if (!Components.Contains(component))
+            if (this.HasComponent<T>())
+            {
+                Components.Remove(GetComponent<T>());
+            } else
+            {
                 throw new ComponentNotFoundException(this);
-
-            Components.Remove(component);
-
-            ComponentRemoved?.Invoke(this, component);
-            OwnerPool.ComponentRemoved(this);
+            }
         }
 
         /// <summary>
@@ -217,25 +213,5 @@ namespace SharpECS
                 throw new Exception();
             }
         }
-
-        /// <summary>
-        /// Lets you remove "component" from "entity" with a -=
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <param name="component"></param>
-        /// <returns></returns>
-        public static Entity operator -(Entity entity, IComponent component)
-        {
-            if (entity != null && component != null)
-            {
-                entity.RemoveComponent(component);
-                return entity;
-            }
-            else
-            {
-                throw new Exception();
-            }
-        }
-
     }
 }
