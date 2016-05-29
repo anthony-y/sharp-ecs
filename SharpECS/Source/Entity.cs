@@ -183,7 +183,7 @@ namespace SharpECS
         }
 
         /// <summary>
-        /// Adds an array of components to an Entity all at once.
+        /// Allows an infinite(?) number of components as parameters and adds them all at once to "this".
         /// </summary>
         /// <param name="components"></param>
         public void AddComponents(params IComponent[] components)
