@@ -67,22 +67,6 @@ namespace SharpECS
         }
 
         /// <summary>
-        /// DOESN'T check if this already has "component"
-        /// Adds the component to "Components".
-        /// And fire the ComponentAdded event (if it's also not null)
-        /// </summary>
-        /// <param name="component"></param>
-        /// <returns></returns>
-        public IComponent UnsafeAddComponent(IComponent component)
-        {
-            Components.Add(component);
-            ComponentAdded?.Invoke(this, component);
-            OwnerPool.ComponentAdded(this);
-
-            return component;
-        }
-
-        /// <summary>
         /// Removes "component" if it isn't null and this has it.
         /// </summary>
         /// <param name="component"></param>
@@ -130,22 +114,6 @@ namespace SharpECS
             } else
             {
                 throw new ComponentNotFoundException(this);
-            }
-        }
-
-        /// <summary>
-        /// Identical to MoveComponent except calls "destination.UnsafeAddComponent(component)" instead of
-        /// destination.AddComponent(component).
-        /// </summary>
-        /// <param name="component"></param>
-        /// <param name="destination"></param>
-        public void UnsafeMoveComponent(IComponent component, Entity destination)
-        {
-            // If the component itself isn't null and its actually on "this".
-            if (component != null && Components.FirstOrDefault(com => com.GetType() == component.GetType()) != null)
-            {
-                destination.UnsafeAddComponent(component);
-                Components.Remove(component);
             }
         }
 
