@@ -160,16 +160,6 @@ namespace SharpECS
         }
 
         /// <summary>
-        /// Adds an IEnumerable of components to an Entity all at once.
-        /// Calls AddComponents(params IComponent[] components) anyway.
-        /// </summary>
-        /// <param name="components"></param>
-        public void AddComponents(IEnumerable<IComponent> components)
-        {
-            AddComponents(components);
-        }
-
-        /// <summary>
         /// Moves this Entity to another EntityPool (if it isn't null)
         /// </summary>
         /// <param name="pool"></param>
