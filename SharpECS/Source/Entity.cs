@@ -61,6 +61,7 @@ namespace SharpECS
             }
 
             Components.Add(component);
+            ComponentAdded?.Invoke(this, component);
             OwnerPool.ComponentAdded(this);
 
             return component;
@@ -70,7 +71,10 @@ namespace SharpECS
         {
             if (this.HasComponent<T>())
             {
-                Components.Remove(GetComponent<T>());
+                IComponent componentToRemove = GetComponent<T>();
+
+                Components.Remove(componentToRemove);
+                ComponentRemoved?.Invoke(this, componentToRemove);
             } else
             {
                 throw new ComponentNotFoundException(this);
