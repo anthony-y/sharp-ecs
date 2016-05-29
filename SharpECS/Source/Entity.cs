@@ -218,5 +218,24 @@ namespace SharpECS
             }
         }
 
+        /// <summary>
+        /// Lets you remove "component" from "entity" with a -=
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="component"></param>
+        /// <returns></returns>
+        public static Entity operator -(Entity entity, IComponent component)
+        {
+            if (entity != null && component != null)
+            {
+                entity.RemoveComponent(component);
+                return entity;
+            }
+            else
+            {
+                throw new Exception();
+            }
+        }
+
     }
 }
