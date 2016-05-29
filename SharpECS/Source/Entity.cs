@@ -52,7 +52,7 @@ namespace SharpECS
         /// </summary>
         /// <param name="component"></param>
         /// <returns></returns>
-        public IComponent AddComponent(IComponent component)
+        private IComponent AddComponent(IComponent component)
         {
             // If it has a component of the same type as "component".
             if (this.Components.FirstOrDefault(com => com.GetType() == component.GetType()) != null)
