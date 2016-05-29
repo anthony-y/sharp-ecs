@@ -66,7 +66,7 @@ namespace SharpECS.Samples
             var showOffCarbonCopy = playerEntity.CarbonCopy("MadeWithCarbonCopy(TM)");
 
             // Should be identical to Player.
-            showOffCarbonCopy.GetAllComponents().ForEach(compo => { Console.WriteLine(compo.ToString()); });
+            showOffCarbonCopy.Components.ForEach(compo => { Console.WriteLine(compo.ToString()); });
 
             base.Initialize();
         }
