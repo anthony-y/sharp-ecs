@@ -172,7 +172,7 @@ namespace SharpECS
         }
 
         /// <summary>
-        /// RemoveAllComponents(), reset Tag, OwnerPool and OwnerGroup.
+        /// RemoveAllComponents(), reset Tag, OwnerPool.
         /// </summary>
         public void Reset()
         {
