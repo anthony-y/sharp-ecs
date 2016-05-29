@@ -156,7 +156,10 @@ namespace SharpECS
         /// <param name="components"></param>
         public void AddComponents(params IComponent[] components)
         {
-            Components.AddRange(components);
+            foreach (IComponent com in components)
+            {
+                AddComponent(com);
+            }
         }
 
         /// <summary>
