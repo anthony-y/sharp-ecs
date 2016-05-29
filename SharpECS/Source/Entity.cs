@@ -150,12 +150,19 @@ namespace SharpECS
             this.OwnerPool = null;
         }
 
+        public void AddComponents(IEnumerable<IComponent> components)
+        {
+            components.ToList().ForEach(com => AddComponent(com));
+        }
+
         /// <summary>
         /// Allows an infinite(?) number of components as parameters and adds them all at once to "this".
         /// </summary>
         /// <param name="components"></param>
         public void AddComponents(params IComponent[] components)
         {
+            // Can't just call "AddComponents(IEnumerable<IComponent> components)" because
+            // the compiler can't tell the difference between the two signatures.
             components.ToList().ForEach(com => AddComponent(com));
         }
 
