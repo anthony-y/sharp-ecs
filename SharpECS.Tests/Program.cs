@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using SharpECS;
 
 using System.Diagnostics;
 
@@ -22,7 +16,7 @@ namespace SharpECS.Tests
 
             timer.Stop();
 
-            Console.WriteLine("It took " + timer.Elapsed.TotalMilliseconds + "ms to create a new instance of Entity.");
+            Console.WriteLine($"It took {timer.Elapsed.TotalMilliseconds} ms to create a new instance of Entity.");
 
             timer.Restart();
 
@@ -30,7 +24,7 @@ namespace SharpECS.Tests
 
             timer.Stop();
 
-            Console.WriteLine("It took " + timer.Elapsed.TotalMilliseconds + "ms to delete an Entity and move it into the cache!");
+            Console.WriteLine($"It took {timer.Elapsed.TotalMilliseconds} ms to delete an Entity and move it into the cache!");
 
             timer.Restart();
 
@@ -38,7 +32,7 @@ namespace SharpECS.Tests
 
             timer.Stop();
 
-            Console.WriteLine("It took " + timer.Elapsed.TotalMilliseconds + "ms to pull an Entity in from the cache!");
+            Console.WriteLine($"It took {timer.Elapsed.TotalMilliseconds} ms to pull an Entity in from the cache!");
 
             timer.Stop();
 

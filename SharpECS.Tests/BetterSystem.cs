@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using SharpECS;
+﻿using SharpECS;
+using System;
 
 namespace SharpECS.Tests
 {
@@ -21,7 +16,7 @@ namespace SharpECS.Tests
         {
             foreach (var i in Compatible)
             {
-                Console.WriteLine("Compatible Entity: " + i.Tag);
+                Console.WriteLine($"Compatible Entity: {i.Tag}");
             }
         }
 

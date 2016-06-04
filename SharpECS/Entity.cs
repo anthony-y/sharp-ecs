@@ -9,17 +9,10 @@ namespace SharpECS
     public sealed class Entity
     {
         /// <summary>
-        /// Delegate for ComponentAdded and ComponentRemoved.
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <param name="component"></param>
-        public delegate void EntityComponentChanged(Entity entity, IComponent component);
-
-        /// <summary>
         /// Events
         /// </summary>
-        public event EntityComponentChanged ComponentAdded;
-        public event EntityComponentChanged ComponentRemoved;
+        public event Action<Entity, IComponent> ComponentAdded;
+        public event Action<Entity, IComponent> ComponentRemoved;
 
         public string Tag { get; set; }
 
@@ -37,8 +30,10 @@ namespace SharpECS
         {   
             Tag = tag;
 
-            if (pool == null) throw new IndependentEntityException(this);
-
+            if (pool == null)
+            {
+                throw new IndependentEntityException(this);
+            }
             OwnerPool = pool;
 
             Components = new List<IComponent>();
@@ -55,7 +50,7 @@ namespace SharpECS
         private IComponent AddComponent(IComponent component)
         {
             // If it has a component of the same type as "component".
-            if (this.Components.FirstOrDefault(com => com.GetType() == component.GetType()) != null)
+            if (Components.FirstOrDefault(com => com.GetType() == component.GetType()) != null)
             {
                 throw new ComponentAlreadyExistsException(this);
             }
@@ -69,13 +64,14 @@ namespace SharpECS
 
         public void RemoveComponent<T>() where T : IComponent
         {
-            if (this.HasComponent<T>())
+            if (HasComponent<T>())
             {
-                IComponent componentToRemove = GetComponent<T>();
+                var componentToRemove = GetComponent<T>();
 
                 Components.Remove(componentToRemove);
                 ComponentRemoved?.Invoke(this, componentToRemove);
-            } else
+            }
+            else
             {
                 throw new ComponentNotFoundException(this);
             }
@@ -92,8 +88,10 @@ namespace SharpECS
         {
             var match = Components.OfType<T>().FirstOrDefault();
 
-            if (match == null) throw new ComponentNotFoundException(this);
-
+            if (match == null)
+            {
+                throw new ComponentNotFoundException(this);
+            }
             return match;
         }
 
@@ -111,7 +109,8 @@ namespace SharpECS
             {
                 destination.AddComponent(component);
                 Components.Remove(component);
-            } else
+            }
+            else
             {
                 throw new ComponentNotFoundException(this);
             }
@@ -126,9 +125,7 @@ namespace SharpECS
         public bool HasComponent<TComponent>() where TComponent : IComponent
         {
             var match = Components.OfType<TComponent>().FirstOrDefault();
-
-            if (match != null) return true;
-            else return false;
+            return match != null;
         }
 
         /// <summary>
@@ -146,8 +143,8 @@ namespace SharpECS
         {
             RemoveAllComponents();
 
-            this.Tag = string.Empty;
-            this.OwnerPool = null;
+            Tag = string.Empty;
+            OwnerPool = null;
         }
 
         public void AddComponents(IEnumerable<IComponent> components)
@@ -175,9 +172,10 @@ namespace SharpECS
             if (pool != null)
             {
                 pool.AddEntity(this);
-                this.OwnerPool.DestroyEntity(this);
-                this.OwnerPool = pool;
-            } else
+                OwnerPool.DestroyEntity(this);
+                OwnerPool = pool;
+            }
+            else
             {
                 throw new NullEntityPoolException(pool);
             }
@@ -203,13 +201,14 @@ namespace SharpECS
         /// <param name="entity"></param>
         /// <param name="component"></param>
         /// <returns></returns>
-        public static Entity operator + (Entity entity, IComponent component)
+        public static Entity operator+ (Entity entity, IComponent component)
         {
             if (entity != null && component != null)
             {
                 entity.AddComponent(component);
                 return entity;
-            } else
+            }
+            else
             {
                 throw new Exception();
             }

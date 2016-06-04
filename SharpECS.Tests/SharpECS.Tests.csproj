@@ -7,27 +7,29 @@
     <ProjectGuid>{F80A42F0-FAED-40A3-8C57-708AB64678BA}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ECSIsBetter.Tests</RootNamespace>
-    <AssemblyName>ECSIsBetter.Tests</AssemblyName>
+    <RootNamespace>SharpECS.Tests</RootNamespace>
+    <AssemblyName>SharpECS.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\Builds\SharpECS.Tests\Debug\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\Builds\SharpECS.Tests\Release\</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -53,9 +55,13 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SharpECS.Samples\SharpECS.Samples.csproj">
+      <Project>{12c1af6d-3b23-4f8f-8228-7852ee90e7ea}</Project>
+      <Name>SharpECS.Samples</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SharpECS\SharpECS.csproj">
-      <Project>{085bc590-ea90-4ca6-8540-f61299c562ac}</Project>
-      <Name>ECSIsBetter</Name>
+      <Project>{085BC590-EA90-4CA6-8540-F61299C562AC}</Project>
+      <Name>SharpECS</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

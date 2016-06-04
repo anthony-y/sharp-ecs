@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SharpECS")]
+[assembly: AssemblyTitle("SharpECS.UnitTests")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("SharpECS")]
+[assembly: AssemblyProduct("SharpECS.UnitTests")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("085bc590-ea90-4ca6-8540-f61299c562ac")]
+[assembly: Guid("1d99e325-1f85-46b4-aa52-872f797e9e15")]
 
 // Version information for an assembly consists of the following four values:
 //

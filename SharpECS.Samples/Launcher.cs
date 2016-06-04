@@ -3,9 +3,6 @@
 namespace SharpECS.Samples
 {
 #if WINDOWS || LINUX
-    /// <summary>
-    /// The main class.
-    /// </summary>
     internal static class Launcher
     {
         /// <summary>
@@ -14,8 +11,10 @@ namespace SharpECS.Samples
         [STAThread]
         static void Main()
         {
-            using (var game = new Game())
+            using (var game = new SampleGame())
+            {
                 game.Run();
+            }
         }
     }
 #endif

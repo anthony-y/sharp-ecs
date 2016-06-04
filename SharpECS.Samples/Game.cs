@@ -1,40 +1,36 @@
 ﻿using System;
-using System.Linq;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-
-using SharpECS;
 using SharpECS.Samples.Components;
 using SharpECS.Samples.Systems;
-using System.Collections.Generic;
 
 namespace SharpECS.Samples
 {
-    internal class Game 
-        : Microsoft.Xna.Framework.Game
+    internal class SampleGame 
+        : Game
     {
-        GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
+        private GraphicsDeviceManager _graphics;
+        private SpriteBatch _spriteBatch;
+         
+        private KeyboardState _keyboard;
+        private KeyboardState _previousKeyboard;
+         
+        private MouseState _mouse;
+        private MouseState _previousMouse;
+         
+        private EntityPool _entityPool;
+         
+        private GraphicsSystem _graphicsSystem;
+        private ControllerSystem _controllerSystem;
+         
+        private Entity _playerEntity;
+        private Entity _hostileEntity;
 
-        KeyboardState keyboard;
-        KeyboardState previousKeyboard;
-
-        MouseState mouse;
-        MouseState previousMouse;
-
-        EntityPool entityPool;
-
-        GraphicsSystem graphicsSystem;
-        ControllerSystem controllerSystem;
-
-        Entity playerEntity;
-        Entity hostileEntity;
-
-        public Game()
+        public SampleGame()
         {
-            graphics = new GraphicsDeviceManager(this);
+            _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
 
             IsMouseVisible = true;
@@ -42,28 +38,28 @@ namespace SharpECS.Samples
 
         protected override void Initialize()
         {
-            entityPool = EntityPool.New("EntityPool");
+            _entityPool = EntityPool.New("EntityPool");
 
-            playerEntity = entityPool.CreateEntity("Player");
-            hostileEntity = entityPool.CreateEntity("HostileEntity");
+            _playerEntity = _entityPool.CreateEntity("Player");
+            _hostileEntity = _entityPool.CreateEntity("HostileEntity");
 
             // Systems will refresh when new Entities have compatible components added to them.
-            graphicsSystem = new GraphicsSystem(entityPool);
-            controllerSystem = new ControllerSystem(entityPool);
+            _graphicsSystem = new GraphicsSystem(_entityPool);
+            _controllerSystem = new ControllerSystem(_entityPool);
 
             // One way of adding components.
-            playerEntity += new TransformComponent() { Position = new Vector2(10, 20) };
-            playerEntity += new GraphicsComponent() { Texture = Content.Load<Texture2D>("Sprite") };
-            playerEntity += new ControllerComponent();
+            _playerEntity += new TransformComponent { Position = new Vector2(10, 20) };
+            _playerEntity += new GraphicsComponent { Texture = Content.Load<Texture2D>("Sprite") };
+            _playerEntity += new ControllerComponent();
 
             // Alternate way.
-            hostileEntity.AddComponents
+            _hostileEntity.AddComponents
             (
-                new GraphicsComponent() { Texture = Content.Load<Texture2D>("Sprite") },
-                new TransformComponent() { Position = new Vector2(350, 200) }
+                new GraphicsComponent { Texture = Content.Load<Texture2D>("Sprite") },
+                new TransformComponent { Position = new Vector2(350, 200) }
             );
 
-            var showOffCarbonCopy = playerEntity.CarbonCopy("MadeWithCarbonCopy(TM)");
+            var showOffCarbonCopy = _playerEntity.CarbonCopy("MadeWithCarbonCopy(TM)");
 
             // Should be identical to Player.
             showOffCarbonCopy.Components.ForEach(compo => { Console.WriteLine(compo.ToString()); });
@@ -74,7 +70,7 @@ namespace SharpECS.Samples
         protected override void LoadContent()
         {
             // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(GraphicsDevice);
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
         }
 
         protected override void UnloadContent()
@@ -84,33 +80,33 @@ namespace SharpECS.Samples
 
         protected override void Update(GameTime gameTime)
         {
-            keyboard = Keyboard.GetState();
-            mouse = Mouse.GetState();
+            _keyboard = Keyboard.GetState();
+            _mouse = Mouse.GetState();
 
-            if (keyboard.IsKeyDown(Keys.Escape)) Exit();
+            if (_keyboard.IsKeyDown(Keys.Escape)) Exit();
 
-            if (mouse.LeftButton == ButtonState.Pressed && previousMouse.LeftButton == ButtonState.Released
-                && entityPool.DoesEntityExist(hostileEntity))
+            if (_mouse.LeftButton == ButtonState.Pressed && _previousMouse.LeftButton == ButtonState.Released
+                && _entityPool.DoesEntityExist(_hostileEntity))
             {
-                hostileEntity.GetComponent<TransformComponent>().Position = new Vector2(mouse.Position.X - 16, mouse.Position.Y - 16);
+                _hostileEntity.GetComponent<TransformComponent>().Position = new Vector2(_mouse.Position.X - 16, _mouse.Position.Y - 16);
             }
 
-            if (mouse.RightButton == ButtonState.Pressed && previousMouse.RightButton == ButtonState.Released
-                && entityPool.DoesEntityExist(hostileEntity))
+            if (_mouse.RightButton == ButtonState.Pressed && _previousMouse.RightButton == ButtonState.Released
+                && _entityPool.DoesEntityExist(_hostileEntity))
             {
-                entityPool.DestroyEntity(hostileEntity);
+                _entityPool.DestroyEntity(_hostileEntity);
             }
 
 #if DEBUG
-            foreach (var i in entityPool.Entities)
+            foreach (var i in _entityPool.Entities)
             {
-                Console.WriteLine("Entity: " + i.Tag);
+                Console.WriteLine($"Entity: {i.Tag}");
             }
 #endif
-            controllerSystem.Update(gameTime);
+            _controllerSystem.Update(gameTime);
 
-            previousMouse = mouse;
-            previousKeyboard = keyboard;
+            _previousMouse = _mouse;
+            _previousKeyboard = _keyboard;
 
             base.Update(gameTime);
         }
@@ -119,9 +115,9 @@ namespace SharpECS.Samples
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            spriteBatch.Begin();
-            graphicsSystem.Draw(spriteBatch);
-            spriteBatch.End();
+            _spriteBatch.Begin();
+            _graphicsSystem.Draw(_spriteBatch);
+            _spriteBatch.End();
 
             base.Draw(gameTime);
         }

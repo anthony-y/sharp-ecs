@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using SharpECS;
-
-namespace SharpECS.Tests
+﻿namespace SharpECS.Tests
 {
     public class BetterComponent
         : IComponent

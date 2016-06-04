@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using SharpECS.Exceptions;
 
@@ -13,28 +11,14 @@ namespace SharpECS
     /// </summary>
     public class EntityPool
     {
-        public delegate void EntityChanged(EntityPool pool, Entity entity);
+        public event Action<EntityPool, Entity> EntityAdded;
+        public event Action<EntityPool, Entity> EntityRemoved;
 
-        public event EntityChanged EntityAdded;
-        public event EntityChanged EntityRemoved;
+        public event Action<EntityPool, Entity> EntityComponentAdded;
+        public event Action<EntityPool, Entity> EntityComponentRemoved;
 
-        public event EntityChanged EntityComponentAdded;
-        public event EntityChanged EntityComponentRemoved;
-
-        private List<Entity> _activeEntities;
-        private Stack<Entity> _cachedEntities;
-
-        public List<Entity> Entities
-        {
-            get { return _activeEntities; }
-            private set { _activeEntities = value; }
-        }
-
-        public Stack<Entity> CachedEntities
-        {
-            get { return _cachedEntities; }
-            private set { _cachedEntities = value; }
-        }
+        public List<Entity> Entities { get; private set; }
+        public Stack<Entity> CachedEntities { get; private set; }
 
         public string Name { get; set; }
 
@@ -55,10 +39,13 @@ namespace SharpECS
 
         private EntityPool(string name)
         {
-            _activeEntities = new List<Entity>();
-            _cachedEntities = new Stack<Entity>();
+            Entities = new List<Entity>();
+            CachedEntities = new Stack<Entity>();
 
-            if (name != null) Name = name;
+            if (name != null)
+            {
+                Name = name;
+            }
         }
 
         /// <summary>
@@ -68,7 +55,7 @@ namespace SharpECS
         /// <returns></returns>
         public Entity AddEntity(Entity entity)
         {
-            _activeEntities.Add(entity);
+            Entities.Add(entity);
 
             EntityAdded?.Invoke(this, entity);
 
@@ -84,7 +71,7 @@ namespace SharpECS
         {
             Entity newEntity = null;
 
-            var tagMatch = this.Entities.FirstOrDefault(ent => ent.Tag == entityTag);
+            var tagMatch = Entities.FirstOrDefault(entity => entity.Tag == entityTag);
 
             if (tagMatch != null)
             {
@@ -96,19 +83,20 @@ namespace SharpECS
                 throw new Exception("The string you entered was blank or null.");
             }
                 
-            if (_cachedEntities.Count > 0)
+            if (CachedEntities.Count > 0)
             {
-                newEntity = _cachedEntities.Pop();
-                _activeEntities.Add(newEntity);
+                newEntity = CachedEntities.Pop();
+                Entities.Add(newEntity);
 
-                if (newEntity != null && _activeEntities.Contains(newEntity))
+                if (newEntity != null && Entities.Contains(newEntity))
                 {
                     newEntity.Tag = entityTag;
                     newEntity.OwnerPool = this;
 #if DEBUG
                     Console.WriteLine($"Retrieved {newEntity.Tag} from cache.");
 #endif
-                } else
+                }
+                else
                 {
                     throw new EntityNotFoundException(this);
                 }
@@ -120,7 +108,7 @@ namespace SharpECS
 #endif
             }
 
-            _activeEntities.Add(newEntity);
+            Entities.Add(newEntity);
 
             EntityAdded?.Invoke(this, newEntity);
 
@@ -141,8 +129,10 @@ namespace SharpECS
         {
             var match = Entities.FirstOrDefault(ent => ent.Tag == entityTag);
 
-            if (match != null) return match;
-
+            if (match != null)
+            {
+                return match;
+            }
             throw new EntityNotFoundException(this);
         }
 
@@ -161,18 +151,19 @@ namespace SharpECS
             // See Entity.cs
             entity.Reset();
 
-            if (_activeEntities.Contains(entity))
+            if (Entities.Contains(entity))
             {
-                if (_cachedEntities.Count < MAX_CACHED_ENTITIES)
+                if (CachedEntities.Count < MAX_CACHED_ENTITIES)
                 {
-                    _cachedEntities.Push(entity);
-                    _activeEntities.Remove(entity);
+                    CachedEntities.Push(entity);
+                    Entities.Remove(entity);
                 }
                 else
                 {
-                    _activeEntities.Remove(entity);
+                    Entities.Remove(entity);
                 }
-            } else
+            }
+            else
             {
                 throw new EntityNotFoundException(this);
             }
@@ -182,9 +173,9 @@ namespace SharpECS
 
         public void UnsafeDestroyEntity(Entity entity)
         {
-            if (entity != null && _activeEntities.Contains(entity))
+            if (entity != null && Entities.Contains(entity))
             {
-                _activeEntities.Remove(entity);
+                Entities.Remove(entity);
                 EntityRemoved?.Invoke(this, entity);
             }
             else
@@ -198,7 +189,7 @@ namespace SharpECS
         /// </summary>
         public void WipeCache()
         {
-            _cachedEntities.Clear();
+            CachedEntities.Clear();
         }
 
         /// <summary>
@@ -206,7 +197,7 @@ namespace SharpECS
         /// </summary>
         public void WipeEntities()
         {
-            _activeEntities.Clear();
+            Entities.Clear();
         }
 
         internal void ComponentAdded(Entity entity)
@@ -225,7 +216,7 @@ namespace SharpECS
         /// <param name="pool"></param>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public static EntityPool operator + (EntityPool pool, Entity entity)
+        public static EntityPool operator+ (EntityPool pool, Entity entity)
         {
             pool.AddEntity(entity);
 
@@ -238,13 +229,14 @@ namespace SharpECS
         /// <param name="pool"></param>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public static EntityPool operator - (EntityPool pool, Entity entity)
+        public static EntityPool operator- (EntityPool pool, Entity entity)
         {
             if (entity != null)
             {
                 pool.DestroyEntity(entity);
                 return pool;
-            } else
+            }
+            else
             {
                 throw new EntityNotFoundException(pool);
             }

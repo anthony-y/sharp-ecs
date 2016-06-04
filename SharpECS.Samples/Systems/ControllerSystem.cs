@@ -1,15 +1,10 @@
-﻿using System;
-
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Graphics;
-
-using SharpECS;
 using SharpECS.Samples.Components;
 
 namespace SharpECS.Samples.Systems
 {
-    internal class ControllerSystem 
+    public class ControllerSystem 
         : EntitySystem<ControllerComponent>
     {
         public ControllerSystem(EntityPool pool)
