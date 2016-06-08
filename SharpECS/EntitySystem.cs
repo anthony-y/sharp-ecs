@@ -10,7 +10,7 @@ namespace SharpECS
 
         public IEnumerable<Entity> Compatible { get; set; }
 
-        private List<IComponent> _compatibleComponents;
+        private List<Type> _compatibleTypes;
 
         //public EntitySystem(EntityPool pool)
         //{
@@ -25,17 +25,17 @@ namespace SharpECS
         //    Pool.EntityComponentRemoved += OnPoolEntityChanged;
         //}
 
-        public EntitySystem(EntityPool pool, params Type[] compatible)
+        public EntitySystem(EntityPool pool, params Type[] compatibleTypes)
         {
-            _compatibleComponents = new List<IComponent>();
+            _compatibleTypes = new List<Type>();
 
             Pool = pool;
             
-            foreach (var i in compatible)
+            foreach (var compatibleType in compatibleTypes)
             {
-                if (IsImplementedFromComponent(i))
+                if (typeof(IComponent).IsAssignableFrom(compatibleType))
                 {
-                    _compatibleComponents.Add(i as IComponent);
+                    _compatibleTypes.Add(compatibleType);
                 }
             }
 
@@ -58,30 +58,17 @@ namespace SharpECS
 #endif
         }
 
-        private bool IsImplementedFromComponent(Type objectType)
-        {
-            foreach (var interfac in objectType.GetInterfaces())
-            {
-                if (objectType.IsSubclassOf(typeof(IComponent)))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
         private IEnumerable<Entity> GetCompatibleInPool()
         {
             var list = new List<Entity>();
 
-            foreach (var i in Pool.Entities)
+            foreach (var entity in Pool.Entities)
             {
-                foreach (var j in _compatibleComponents)
+                foreach (var compatibleType in _compatibleTypes)
                 {
-                    if (i.Components.FirstOrDefault(com => com.GetType() == j.GetType()) != null)
+                    if (entity.Components.FirstOrDefault(com => com.GetType() == compatibleType) != null)
                     {
-                        list.Add(i);
+                        list.Add(entity);
                     }
                 }
             }
