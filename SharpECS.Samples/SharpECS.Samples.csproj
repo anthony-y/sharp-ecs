@@ -48,7 +48,7 @@
     <Compile Include="Components\ControllerComponent.cs" />
     <Compile Include="Components\GraphicsComponent.cs" />
     <Compile Include="Components\TransformComponent.cs" />
-    <Compile Include="Game.cs" />
+    <Compile Include="SampleGame.cs" />
     <Compile Include="Launcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Systems\ControllerSystem.cs" />

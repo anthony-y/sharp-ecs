@@ -44,11 +44,13 @@ namespace SharpECS.Samples
             _hostileEntity = _entityPool.CreateEntity("HostileEntity");
 
             // Systems will refresh when new Entities have compatible components added to them.
-            _graphicsSystem = new GraphicsSystem(_entityPool);
-            _controllerSystem = new ControllerSystem(_entityPool);
+            _graphicsSystem = new GraphicsSystem(_entityPool, typeof(GraphicsComponent));
+            _controllerSystem = new ControllerSystem(_entityPool, typeof(ControllerComponent));
 
             // One way of adding components.
-            _playerEntity += new TransformComponent { Position = new Vector2(10, 20) };
+            _playerEntity += new TransformComponent { Position = new Vector2(10, 20), Id = "transformOne" };
+            _playerEntity += new TransformComponent { Position = new Vector2(20, 10), Id = "transformTwo" };
+
             _playerEntity += new GraphicsComponent { Texture = Content.Load<Texture2D>("Sprite") };
             _playerEntity += new ControllerComponent();
 
@@ -59,10 +61,10 @@ namespace SharpECS.Samples
                 new TransformComponent { Position = new Vector2(350, 200) }
             );
 
-            var showOffCarbonCopy = _playerEntity.CarbonCopy("MadeWithCarbonCopy(TM)");
+            //var showOffCarbonCopy = _playerEntity.CarbonCopy("MadeWithCarbonCopy(TM)");
 
             // Should be identical to Player.
-            showOffCarbonCopy.Components.ForEach(compo => { Console.WriteLine(compo.ToString()); });
+            //showOffCarbonCopy.Components.ForEach(compo => { Console.WriteLine(compo.ToString()); });
 
             base.Initialize();
         }
@@ -100,7 +102,7 @@ namespace SharpECS.Samples
 #if DEBUG
             foreach (var i in _entityPool.Entities)
             {
-                Console.WriteLine($"Entity: {i.Tag}");
+                Console.WriteLine($"Entity: {i.Id}");
             }
 #endif
             _controllerSystem.Update(gameTime);

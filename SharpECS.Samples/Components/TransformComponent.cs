@@ -1,14 +1,15 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 
 namespace SharpECS.Samples.Components
 {
     public class TransformComponent 
         : IComponent
     {
-        public Entity Owner { get; set; }
-        
         private Vector2 _position;
 
+        public string Id { get; set; }
+        
         public Vector2 Position
         {
             get { return _position; }

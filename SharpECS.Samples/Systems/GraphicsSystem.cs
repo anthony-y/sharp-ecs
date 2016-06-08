@@ -1,14 +1,15 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SharpECS.Samples.Components;
+using System;
 
 namespace SharpECS.Samples.Systems
 {
     public class GraphicsSystem 
-        : EntitySystem<GraphicsComponent>
+        : EntitySystem
     {
-        public GraphicsSystem(EntityPool pool)
-            : base(pool)
+        public GraphicsSystem(EntityPool pool, params Type[] compatible)
+            : base(pool, compatible)
         {
 
         }
@@ -17,8 +18,10 @@ namespace SharpECS.Samples.Systems
         {
             foreach (var entity in Compatible)
             {
-                var texture = GetCompatibleOn(entity).Texture;
-                var position = entity.GetComponent<TransformComponent>().Position;
+                string comId = (entity.Id == "Player" ? "transformOne" : "");
+
+                var texture = entity.GetComponent<GraphicsComponent>().Texture;
+                var position = entity.GetComponent<TransformComponent>(comId).Position;
 
                 spriteBatch.Draw
                 (

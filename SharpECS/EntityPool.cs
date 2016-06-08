@@ -20,7 +20,7 @@ namespace SharpECS
         public List<Entity> Entities { get; private set; }
         public Stack<Entity> CachedEntities { get; private set; }
 
-        public string Name { get; set; }
+        public string Id { get; set; }
 
         // How many Entites the cache can store at a time.
         private readonly int MAX_CACHED_ENTITIES = 5;
@@ -30,21 +30,21 @@ namespace SharpECS
         /// (it looks prettier than "var pool = new EntityPool("Name");"
         /// also less code) :3
         /// </summary>
-        /// <param name="name"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
-        public static EntityPool New(string name)
+        public static EntityPool New(string id)
         {
-            return new EntityPool(name);
+            return new EntityPool(id);
         }
 
-        private EntityPool(string name)
+        private EntityPool(string id)
         {
             Entities = new List<Entity>();
             CachedEntities = new Stack<Entity>();
 
-            if (name != null)
+            if (id != null)
             {
-                Name = name;
+                Id = id;
             }
         }
 
@@ -71,7 +71,7 @@ namespace SharpECS
         {
             Entity newEntity = null;
 
-            var tagMatch = Entities.FirstOrDefault(entity => entity.Tag == entityTag);
+            var tagMatch = Entities.FirstOrDefault(entity => entity.Id == entityTag);
 
             if (tagMatch != null)
             {
@@ -90,10 +90,10 @@ namespace SharpECS
 
                 if (newEntity != null && Entities.Contains(newEntity))
                 {
-                    newEntity.Tag = entityTag;
+                    newEntity.Id = entityTag;
                     newEntity.OwnerPool = this;
 #if DEBUG
-                    Console.WriteLine($"Retrieved {newEntity.Tag} from cache.");
+                    Console.WriteLine($"Retrieved {newEntity.Id} from cache.");
 #endif
                 }
                 else
@@ -104,7 +104,7 @@ namespace SharpECS
             {
                 newEntity = new Entity(entityTag, this);
 #if DEBUG
-                Console.WriteLine($"Created new instance for {newEntity.Tag} because the cache was empty.");
+                Console.WriteLine($"Created new instance for {newEntity.Id} because the cache was empty.");
 #endif
             }
 
@@ -117,17 +117,17 @@ namespace SharpECS
 
         public bool DoesEntityExist(string tag)
         {
-            return Entities.FirstOrDefault(ent => ent.Tag == tag) != null;
+            return Entities.FirstOrDefault(ent => ent.Id == tag) != null;
         }
 
         public bool DoesEntityExist(Entity entity)
         {
-            return Entities.FirstOrDefault(ent => ent.Tag == entity.Tag) != null;
+            return Entities.FirstOrDefault(ent => ent.Id == entity.Id) != null;
         }
 
         public Entity GetEntity(string entityTag)
         {
-            var match = Entities.FirstOrDefault(ent => ent.Tag == entityTag);
+            var match = Entities.FirstOrDefault(ent => ent.Id == entityTag);
 
             if (match != null)
             {

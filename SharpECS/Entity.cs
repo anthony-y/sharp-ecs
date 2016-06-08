@@ -14,7 +14,7 @@ namespace SharpECS
         public event Action<Entity, IComponent> ComponentAdded;
         public event Action<Entity, IComponent> ComponentRemoved;
 
-        public string Tag { get; set; }
+        public string Id { get; set; }
 
         /// <summary>
         /// The pool which this Entity resides in.
@@ -26,9 +26,9 @@ namespace SharpECS
         /// </summary>
         public List<IComponent> Components { get; set; }
 
-        internal Entity(string tag, EntityPool pool)
+        internal Entity(string id, EntityPool pool)
         {   
-            Tag = tag;
+            Id = id;
 
             if (pool == null)
             {
@@ -49,12 +49,6 @@ namespace SharpECS
         /// <returns></returns>
         private IComponent AddComponent(IComponent component)
         {
-            // If it has a component of the same type as "component".
-            if (Components.FirstOrDefault(com => com.GetType() == component.GetType()) != null)
-            {
-                throw new ComponentAlreadyExistsException(this);
-            }
-
             Components.Add(component);
             ComponentAdded?.Invoke(this, component);
             OwnerPool.ComponentAdded(this);
@@ -84,14 +78,25 @@ namespace SharpECS
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public T GetComponent<T>() where T : IComponent
+        public T GetComponent<T>(string comID = "") where T : IComponent
         {
-            var match = Components.OfType<T>().FirstOrDefault();
+            var found = Components.OfType<T>();
+            T match;
 
-            if (match == null)
+            if (found.Count() > 1)
             {
-                throw new ComponentNotFoundException(this);
+                if (comID != "")
+                {
+                    match = found.FirstOrDefault(com => com.Id == comID);
+                } else
+                {
+                    throw new Exception("There are two components of that type. Pass an identifier so I can tell the difference!");
+                }
+            } else
+            {
+                match = found.FirstOrDefault();
             }
+
             return match;
         }
 
@@ -143,13 +148,13 @@ namespace SharpECS
         {
             RemoveAllComponents();
 
-            Tag = string.Empty;
+            Id = string.Empty;
             OwnerPool = null;
         }
 
         public void AddComponents(IEnumerable<IComponent> components)
         {
-            components.ToList().ForEach(com => AddComponent(com));
+            Components.AddRange(components);
         }
 
         /// <summary>
@@ -160,7 +165,7 @@ namespace SharpECS
         {
             // Can't just call "AddComponents(IEnumerable<IComponent> components)" because
             // the compiler can't tell the difference between the two signatures.
-            components.ToList().ForEach(com => AddComponent(com));
+            Components.AddRange(components);
         }
 
         /// <summary>
