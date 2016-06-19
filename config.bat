@@ -1,0 +1,1 @@
+SET config=Release
