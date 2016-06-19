@@ -3,7 +3,7 @@
 cls
 
 echo Executing!
-echo( # This means a new line
+echo(
 echo ================================
 echo(
 
