@@ -103,10 +103,10 @@ namespace SharpECS.Samples
             }
 
 #if DEBUG
-            foreach (var i in entityPool.Entities)
-            {
-                Console.WriteLine("Entity: " + i.Id);
-            }
+            // foreach (var i in entityPool.Entities)
+            // {
+            //     Console.WriteLine("Entity: " + i.Id);
+            // }
 #endif
             controllerSystem.Update(gameTime);
 
