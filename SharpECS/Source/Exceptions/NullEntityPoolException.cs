@@ -9,7 +9,7 @@ namespace SharpECS.Exceptions
     class NullEntityPoolException : Exception
     {
         public NullEntityPoolException(EntityPool entityPool)
-            : base($"EntityPool {entityPool.Name} was null.")
+            : base($"EntityPool {entityPool.Id} was null.")
         {
 
         }

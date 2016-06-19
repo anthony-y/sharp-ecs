@@ -36,35 +36,35 @@ namespace SharpECS
             private set { _cachedEntities = value; }
         }
 
-        public string Name { get; set; }
+        public string Id { get; set; }
 
         // How many Entites the cache can store at a time.
         private readonly int MAX_CACHED_ENTITIES = 5;
 
         /// <summary>
         /// Creates and returns a new instance of EntityPool
-        /// (it looks prettier than "var pool = new EntityPool("Name");"
+        /// (it looks prettier than "var pool = new EntityPool("Id");"
         /// also less code) :3
         /// </summary>
-        /// <param name="name"></param>
+        /// <param Id="Id"></param>
         /// <returns></returns>
-        public static EntityPool New(string name)
+        public static EntityPool New(string Id)
         {
-            return new EntityPool(name);
+            return new EntityPool(Id);
         }
 
-        private EntityPool(string name)
+        private EntityPool(string Id)
         {
             _activeEntities = new List<Entity>();
             _cachedEntities = new Stack<Entity>();
 
-            if (name != null) Name = name;
+            if (Id != null) this.Id = Id;
         }
 
         /// <summary>
         /// Adds an already existing instance of Entity to the pool.
         /// </summary>
-        /// <param name="entity"></param>
+        /// <param Id="entity"></param>
         /// <returns></returns>
         public Entity AddEntity(Entity entity)
         {
@@ -76,22 +76,22 @@ namespace SharpECS
         }
 
         /// <summary>
-        /// Creates a new Entity with "entityTag", adds it to active Entities and returns it.
+        /// Creates a new Entity with "entityId", adds it to active Entities and returns it.
         /// </summary>
-        /// <param name="entityTag"></param>
+        /// <param Id="entityId"></param>
         /// <returns>Final Entity</returns>
-        public Entity CreateEntity(string entityTag)
+        public Entity CreateEntity(string entityId)
         {
             Entity newEntity = null;
 
-            var tagMatch = this.Entities.FirstOrDefault(ent => ent.Tag == entityTag);
+            var IdMatch = this.Entities.FirstOrDefault(ent => ent.Id == entityId);
 
-            if (tagMatch != null)
+            if (IdMatch != null)
             {
                 throw new DuplicateEntityException(this);
             }
 
-            if (entityTag == string.Empty || entityTag == null || entityTag.Trim() == string.Empty || entityTag.Trim() == null)
+            if (entityId == string.Empty || entityId == null || entityId.Trim() == string.Empty || entityId.Trim() == null)
             {
                 throw new Exception("The string you entered was blank or null.");
             }
@@ -103,10 +103,10 @@ namespace SharpECS
 
                 if (newEntity != null && _activeEntities.Contains(newEntity))
                 {
-                    newEntity.Tag = entityTag;
+                    newEntity.Id = entityId;
                     newEntity.OwnerPool = this;
 #if DEBUG
-                    Console.WriteLine($"Retrieved {newEntity.Tag} from cache.");
+                    Console.WriteLine($"Retrieved {newEntity.Id} from cache.");
 #endif
                 } else
                 {
@@ -114,9 +114,9 @@ namespace SharpECS
                 }
             } else
             {
-                newEntity = new Entity(entityTag, this);
+                newEntity = new Entity(entityId, this);
 #if DEBUG
-                Console.WriteLine($"Created new instance for {newEntity.Tag} because the cache was empty.");
+                Console.WriteLine($"Created new instance for {newEntity.Id} because the cache was empty.");
 #endif
             }
 
@@ -127,19 +127,19 @@ namespace SharpECS
             return newEntity;
         }
 
-        public bool DoesEntityExist(string tag)
+        public bool DoesEntityExist(string Id)
         {
-            return Entities.FirstOrDefault(ent => ent.Tag == tag) != null;
+            return Entities.FirstOrDefault(ent => ent.Id == Id) != null;
         }
 
         public bool DoesEntityExist(Entity entity)
         {
-            return Entities.FirstOrDefault(ent => ent.Tag == entity.Tag) != null;
+            return Entities.FirstOrDefault(ent => ent.Id == entity.Id) != null;
         }
 
-        public Entity GetEntity(string entityTag)
+        public Entity GetEntity(string entityId)
         {
-            var match = Entities.FirstOrDefault(ent => ent.Tag == entityTag);
+            var match = Entities.FirstOrDefault(ent => ent.Id == entityId);
 
             if (match != null) return match;
 
@@ -150,11 +150,11 @@ namespace SharpECS
         /// Adds an Entity to the cache to be re-used if cachedEntities isn't full.
         /// If the cache is full, just remove completely.
         /// </summary>
-        /// <param name="entity"></param>
+        /// <param Id="entity"></param>
         public void DestroyEntity(Entity entity)
         {
             // Keep a copy of the entity so that when EntityRemoved is called,
-            // it still has the tag and stuff.
+            // it still has the Id and stuff.
             var held = entity;
 
             // Reset the Entity.
@@ -222,8 +222,8 @@ namespace SharpECS
         /// <summary>
         /// Operator overload to let you do "pool += entity" to add an Entity to the pool.
         /// </summary>
-        /// <param name="pool"></param>
-        /// <param name="entity"></param>
+        /// <param Id="pool"></param>
+        /// <param Id="entity"></param>
         /// <returns></returns>
         public static EntityPool operator + (EntityPool pool, Entity entity)
         {
@@ -235,8 +235,8 @@ namespace SharpECS
         /// <summary>
         /// Operator overload to let you do "pool -= entity" to remove an Entity from the pool.
         /// </summary>
-        /// <param name="pool"></param>
-        /// <param name="entity"></param>
+        /// <param Id="pool"></param>
+        /// <param Id="entity"></param>
         /// <returns></returns>
         public static EntityPool operator - (EntityPool pool, Entity entity)
         {

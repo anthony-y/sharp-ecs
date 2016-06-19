@@ -21,7 +21,7 @@ namespace SharpECS
         public event EntityComponentChanged ComponentAdded;
         public event EntityComponentChanged ComponentRemoved;
 
-        public string Tag { get; set; }
+        public string Id { get; set; }
 
         /// <summary>
         /// The pool which this Entity resides in.
@@ -33,9 +33,9 @@ namespace SharpECS
         /// </summary>
         public List<IComponent> Components { get; set; }
 
-        internal Entity(string tag, EntityPool pool)
+        internal Entity(string id, EntityPool pool)
         {   
-            Tag = tag;
+            Id = id;
 
             if (pool == null) throw new IndependentEntityException(this);
 
@@ -140,13 +140,13 @@ namespace SharpECS
         }
 
         /// <summary>
-        /// RemoveAllComponents(), reset Tag, OwnerPool.
+        /// RemoveAllComponents(), reset Id, OwnerPool.
         /// </summary>
         public void Reset()
         {
             RemoveAllComponents();
 
-            this.Tag = string.Empty;
+            this.Id = string.Empty;
             this.OwnerPool = null;
         }
 
@@ -184,13 +184,13 @@ namespace SharpECS
         }
 
         /// <summary>
-        /// Creates a "carbon copy" of this Entity with the tag of "newTag".
+        /// Creates a "carbon copy" of this Entity with the Id of "newId".
         /// </summary>
-        /// <param name="newTag"></param>
+        /// <param name="newId"></param>
         /// <returns></returns>
-        public Entity CarbonCopy(string newTag)
+        public Entity CarbonCopy(string newId)
         {
-            var newEntity = OwnerPool.CreateEntity(newTag);
+            var newEntity = OwnerPool.CreateEntity(newId);
 
             newEntity.AddComponents(Components);
 

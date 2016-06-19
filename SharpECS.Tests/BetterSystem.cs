@@ -21,7 +21,7 @@ namespace SharpECS.Tests
         {
             foreach (var i in Compatible)
             {
-                Console.WriteLine("Compatible Entity: " + i.Tag);
+                Console.WriteLine("Compatible Entity: " + i.Id);
             }
         }
 

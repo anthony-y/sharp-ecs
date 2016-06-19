@@ -64,6 +64,7 @@ namespace SharpECS.Samples
             );
 
             var showOffCarbonCopy = playerEntity.CarbonCopy("MadeWithCarbonCopy(TM)");
+            Console.WriteLine("Id of showOffCarbonCopy: \"" + showOffCarbonCopy.Id + "\".");
 
             // Should be identical to Player.
             showOffCarbonCopy.Components.ForEach(compo => { Console.WriteLine(compo.ToString()); });
@@ -104,7 +105,7 @@ namespace SharpECS.Samples
 #if DEBUG
             foreach (var i in entityPool.Entities)
             {
-                Console.WriteLine("Entity: " + i.Tag);
+                Console.WriteLine("Entity: " + i.Id);
             }
 #endif
             controllerSystem.Update(gameTime);
