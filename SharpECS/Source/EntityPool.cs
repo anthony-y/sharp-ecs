@@ -72,6 +72,8 @@ namespace SharpECS
 
             EntityAdded?.Invoke(this, entity);
 
+            
+
             return entity;
         }
 

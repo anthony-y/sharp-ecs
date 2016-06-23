@@ -51,6 +51,7 @@
     <Compile Include="Source\Exceptions\IndependentEntityException.cs" />
     <Compile Include="Source\Exceptions\NoCompatibleEntitiesException.cs" />
     <Compile Include="Source\Exceptions\NullEntityPoolException.cs" />
+    <Compile Include="Source\Extensions.cs" />
     <Compile Include="Source\IComponent.cs" />
     <Compile Include="Source\EntitySystem.cs" />
   </ItemGroup>

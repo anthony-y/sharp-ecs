@@ -63,11 +63,54 @@ namespace SharpECS.Samples
                 new TransformComponent() { Position = new Vector2(350, 200) }
             );
 
-            var showOffCarbonCopy = playerEntity.CarbonCopy("MadeWithCarbonCopy(TM)");
-            Console.WriteLine("Id of showOffCarbonCopy: \"" + showOffCarbonCopy.Id + "\".");
+            var showOffCarbonCopy = playerEntity.CarbonCopy("MadeWithCarbonCopy");
+            Console.WriteLine($"Id of showOffCarbonCopy: \"{showOffCarbonCopy.Id}\"");
 
             // Should be identical to Player.
-            showOffCarbonCopy.Components.ForEach(compo => { Console.WriteLine(compo.ToString()); });
+            //showOffCarbonCopy.Components.ForEach(compo => { Console.WriteLine(compo.ToString()); });
+
+            showOffCarbonCopy.CreateChild("ChildOfCC", true);
+
+            showOffCarbonCopy.GetChild("ChildOfCC")
+                .CreateChild("GrandChildOfCC")
+                    .CreateChild("GreatGrandChildOfCC");
+
+            var grandChild = showOffCarbonCopy.GetChild("ChildOfCC")
+                .GetChild("GrandChildOfCC")
+                    .GetChild("GreatGrandChildOfCC");
+
+            Console.WriteLine("Root entity of GrandChildOfCC (should be MadeWithCarbonCopy): " + grandChild.RootEntity.Id);
+            Console.WriteLine("Root entity of Player (should be Player): " + playerEntity.RootEntity.Id);
+
+            //entityPool.Entities.ForEach(ent => { Console.WriteLine(ent.Id); });
+            //showOffCarbonCopy.Children.ForEach(child => { Console.WriteLine(child.Id); });
+
+            var familyTree = showOffCarbonCopy.FamilyTree();
+
+            float posX = 10;
+            float posY = 10;
+
+            for (int i = 0; i < familyTree.Count(); i++)
+            {
+                var ent = familyTree.ToList()[i];
+
+                ent += new TransformComponent()
+                {
+                    Position = new Vector2(posX, posY)
+                };
+
+                posX += 32;
+                posY += 64;
+
+                ent += new GraphicsComponent()
+                {
+                    Texture = Content.Load<Texture2D>("Sprite"),
+                };
+            }
+
+            //entityPool.DestroyEntity(showOffCarbonCopy);
+
+            //var fromTheCache = entityPool.CreateEntity("FromTheCache");
 
             base.Initialize();
         }
@@ -102,12 +145,6 @@ namespace SharpECS.Samples
                 entityPool.DestroyEntity(hostileEntity);
             }
 
-#if DEBUG
-            // foreach (var i in entityPool.Entities)
-            // {
-            //     Console.WriteLine("Entity: " + i.Id);
-            // }
-#endif
             controllerSystem.Update(gameTime);
 
             previousMouse = mouse;

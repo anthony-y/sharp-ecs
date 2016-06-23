@@ -33,6 +33,38 @@ namespace SharpECS
         /// </summary>
         public List<IComponent> Components { get; set; }
 
+        /// <summary>
+        /// A list of this Entitys children Entities.
+        /// </summary>
+        public List<Entity> Children { get; set; }
+
+        public Entity Parent { get; set; }
+        public Entity RootEntity 
+        {
+            get 
+            {
+                if (this.Parent == null)
+                {
+                    return this;
+                }
+
+                var parent = Parent;
+
+                while (parent != null) 
+                {
+                    if (parent.Parent == null)
+                    {
+                        return parent;
+                    } else
+                    {
+                        parent = parent.Parent;
+                    }
+                }
+
+                throw new Exception($"Entity \"{Id}\" has no Root!");
+            }
+        }
+
         internal Entity(string id, EntityPool pool)
         {   
             Id = id;
@@ -42,6 +74,7 @@ namespace SharpECS
             OwnerPool = pool;
 
             Components = new List<IComponent>();
+            Children = new List<Entity>();
         }
         
         /// <summary>
@@ -75,6 +108,7 @@ namespace SharpECS
 
                 Components.Remove(componentToRemove);
                 ComponentRemoved?.Invoke(this, componentToRemove);
+                OwnerPool.ComponentRemoved(this);
             } else
             {
                 throw new ComponentNotFoundException(this);
@@ -145,6 +179,8 @@ namespace SharpECS
         public void Reset()
         {
             RemoveAllComponents();
+            foreach (var ent in Children) { OwnerPool.DestroyEntity(ent); }
+            Children.Clear();
 
             this.Id = string.Empty;
             this.OwnerPool = null;
@@ -152,7 +188,10 @@ namespace SharpECS
 
         public void AddComponents(IEnumerable<IComponent> components)
         {
-            components.ToList().ForEach(com => AddComponent(com));
+            foreach (var c in components) 
+            {
+                AddComponent(c);
+            }
         }
 
         /// <summary>
@@ -161,9 +200,10 @@ namespace SharpECS
         /// <param name="components"></param>
         public void AddComponents(params IComponent[] components)
         {
-            // Can't just call "AddComponents(IEnumerable<IComponent> components)" because
-            // the compiler can't tell the difference between the two signatures.
-            components.ToList().ForEach(com => AddComponent(com));
+            foreach (var c in components) 
+            {
+                AddComponent(c);
+            }
         }
 
         /// <summary>
@@ -195,6 +235,45 @@ namespace SharpECS
             newEntity.AddComponents(Components);
 
             return newEntity;
+        }
+
+        public Entity CreateChild(string childId, bool inheritComponents=false)
+        {
+            var child = OwnerPool.CreateEntity(childId);
+
+            child.Parent = this;
+            if (inheritComponents) { child.AddComponents(Components); }
+
+            Children.Add(child);
+
+            return child;
+        }
+
+        public Entity AddChild(Entity entity)
+        {
+            entity.Parent = this;
+            Children.Add(entity);
+
+            return entity;
+        }
+
+        public Entity GetChild(string childId)
+        {
+            return Children.FirstOrDefault(c => c.Id == childId);
+        }
+
+        public IEnumerable<Entity> FamilyTree()
+        {
+            var childSelector = new Func<Entity, IEnumerable<Entity>>(ent => ent.Children);
+
+            var stack = new Stack<Entity>(Children);
+            while (stack.Any())
+            {
+                var next = stack.Pop();
+                yield return next;
+                foreach (var child in childSelector(next))
+                    stack.Push(child);
+            }
         }
 
         /// <summary>

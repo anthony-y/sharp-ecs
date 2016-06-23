@@ -21,21 +21,17 @@ namespace SharpECS
 
             Compatible = GetCompatibleInPool();
 
-            Pool.EntityAdded += OnPoolEntityChanged;
-            Pool.EntityRemoved += OnPoolEntityChanged;
-
             Pool.EntityComponentAdded += OnPoolEntityChanged;
             Pool.EntityComponentRemoved += OnPoolEntityChanged;
+
+            Pool.EntityAdded += OnPoolEntityChanged;
+            Pool.EntityRemoved += OnPoolEntityChanged;
         }
 
         private void OnPoolEntityChanged(EntityPool pool, Entity entity)
         {
             Pool = pool;
             Compatible = GetCompatibleInPool();
-
-#if DEBUG
-            Console.WriteLine($"System refreshed it's Compatible Entities because Entity \"{entity.Id} was changed or added.");
-#endif
         }
 
         private List<Entity> GetCompatibleInPool()
