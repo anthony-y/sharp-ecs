@@ -11,10 +11,10 @@ using SharpECS.Samples.Components;
 namespace SharpECS.Samples.Systems
 {
     internal class GraphicsSystem 
-        : EntitySystem<GraphicsComponent>
+        : EntitySystem
     {
         public GraphicsSystem(EntityPool pool)
-            : base(pool)
+            : base(pool, typeof(GraphicsComponent), typeof(TransformComponent))
         {
 
         }
@@ -23,7 +23,7 @@ namespace SharpECS.Samples.Systems
         {
             foreach (var entity in Compatible)
             {
-                var texture = GetCompatibleOn(entity).Texture;
+                var texture = entity.GetComponent<GraphicsComponent>().Texture;
                 var position = entity.GetComponent<TransformComponent>().Position;
 
                 spriteBatch.Draw

@@ -9,10 +9,10 @@ using SharpECS;
 namespace SharpECS.Tests
 {
     public class BetterSystem
-        : EntitySystem<IComponent>
+        : EntitySystem
     {
         public BetterSystem(EntityPool entityPool)
-            : base(entityPool)
+            : base(entityPool, typeof(IComponent))
         {
             Console.WriteLine("Hi from test system.");
         }

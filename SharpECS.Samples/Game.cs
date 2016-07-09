@@ -54,7 +54,7 @@ namespace SharpECS.Samples
             // One way of adding components.
             playerEntity += new TransformComponent() { Position = new Vector2(10, 20) };
             playerEntity += new GraphicsComponent() { Texture = Content.Load<Texture2D>("Sprite") };
-            playerEntity += new ControllerComponent();
+            playerEntity += new ControllerComponent() { MoveSpeed = 100 };
 
             // Alternate way.
             hostileEntity.AddComponents
@@ -69,7 +69,7 @@ namespace SharpECS.Samples
             // Should be identical to Player.
             //showOffCarbonCopy.Components.ForEach(compo => { Console.WriteLine(compo.ToString()); });
 
-            showOffCarbonCopy.CreateChild("ChildOfCC", true);
+            showOffCarbonCopy.CreateChild("ChildOfCC", false);
 
             showOffCarbonCopy.GetChild("ChildOfCC")
                 .CreateChild("GrandChildOfCC")
@@ -92,7 +92,7 @@ namespace SharpECS.Samples
 
             for (int i = 0; i < familyTree.Count(); i++)
             {
-                var ent = familyTree.ToList()[i];
+                var ent = familyTree.ElementAt(i);
 
                 ent += new TransformComponent()
                 {
@@ -145,7 +145,7 @@ namespace SharpECS.Samples
                 entityPool.DestroyEntity(hostileEntity);
             }
 
-            controllerSystem.Update(gameTime);
+            controllerSystem?.Update(gameTime);
 
             previousMouse = mouse;
             previousKeyboard = keyboard;
@@ -158,7 +158,7 @@ namespace SharpECS.Samples
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             spriteBatch.Begin();
-            graphicsSystem.Draw(spriteBatch);
+            graphicsSystem?.Draw(spriteBatch);
             spriteBatch.End();
 
             base.Draw(gameTime);

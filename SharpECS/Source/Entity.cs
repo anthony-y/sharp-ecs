@@ -165,6 +165,25 @@ namespace SharpECS
             else return false;
         }
 
+        public bool HasComponent(Type componentType)
+        {
+            if (!typeof(IComponent).IsAssignableFrom(componentType))
+                throw new Exception("One or more of the types you passed were not IComponent children.");
+
+            var cMatch = Components.FirstOrDefault(com => com.GetType() == componentType);
+            if (cMatch != null) return true;
+
+            return false;
+        }
+
+        public bool HasComponents(IEnumerable<Type> types)
+        {
+            foreach (var t in types)
+                if (!HasComponent(t)) return false;
+
+            return true;
+        }
+
         /// <summary>
         /// Remove all components.
         /// </summary>

@@ -10,10 +10,10 @@ using SharpECS.Samples.Components;
 namespace SharpECS.Samples.Systems
 {
     internal class ControllerSystem 
-        : EntitySystem<ControllerComponent>
+        : EntitySystem
     {
         public ControllerSystem(EntityPool pool)
-            : base(pool)
+            : base(pool, typeof(ControllerComponent), typeof(TransformComponent))
         {
 
         }
@@ -25,8 +25,7 @@ namespace SharpECS.Samples.Systems
             foreach (var entity in Compatible)
             {
                 var transform = entity.GetComponent<TransformComponent>();
-
-                var moveSpeed = GetCompatibleOn(entity).MoveSpeed;
+                var moveSpeed = entity.GetComponent<ControllerComponent>().MoveSpeed;
 
                 if (Keyboard.GetState().IsKeyDown(Keys.D)) { transform.SetX(transform.Position.X + moveSpeed * delta); }
                 if (Keyboard.GetState().IsKeyDown(Keys.A)) { transform.SetX(transform.Position.X - moveSpeed * delta); }
