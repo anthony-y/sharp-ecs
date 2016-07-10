@@ -117,12 +117,11 @@ namespace SharpECS
             } else
             {
                 newEntity = new Entity(entityId, this);
+                _activeEntities.Add(newEntity);
 #if DEBUG
                 Console.WriteLine($"Created new instance for {newEntity.Id} because the cache was empty.");
 #endif
             }
-
-            _activeEntities.Add(newEntity);
 
             EntityAdded?.Invoke(this, newEntity);
 
