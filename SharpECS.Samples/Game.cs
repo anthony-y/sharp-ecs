@@ -63,6 +63,9 @@ namespace SharpECS.Samples
                 new TransformComponent() { Position = new Vector2(350, 200) }
             );
 
+            var playerTransform = playerEntity.GetComponent(typeof(TransformComponent)) as TransformComponent;
+            Console.WriteLine("Player position: " + playerTransform.Position);
+
             var showOffCarbonCopy = playerEntity.CarbonCopy("MadeWithCarbonCopy");
             Console.WriteLine($"Id of showOffCarbonCopy: \"{showOffCarbonCopy.Id}\"");
 
