@@ -13,18 +13,31 @@ namespace SharpECS.Samples.Systems
     internal class GraphicsSystem 
         : EntitySystem
     {
+        private List<TransformComponent> _transforms;
+        private List<GraphicsComponent> _graphics;
+
         public GraphicsSystem(EntityPool pool)
             : base(pool, typeof(GraphicsComponent), typeof(TransformComponent))
         {
-
+            _transforms = new List<TransformComponent>();
+            _graphics = new List<GraphicsComponent>();
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            foreach (var entity in Compatible)
+            if (_transforms.Count <= 0 || _graphics.Count <= 0)
             {
-                var texture = entity.GetComponent<GraphicsComponent>().Texture;
-                var position = entity.GetComponent<TransformComponent>().Position;
+                foreach (var e in Compatible)
+                {
+                    _transforms.Add(e.GetComponent<TransformComponent>());
+                    _graphics.Add(e.GetComponent<GraphicsComponent>());
+                }
+            }
+
+            for (int i = 0; i < Compatible.Count; i++)
+            {
+                var texture = _graphics[i].Texture;
+                var position = _transforms[i].Position;
 
                 spriteBatch.Draw
                 (
@@ -34,7 +47,5 @@ namespace SharpECS.Samples.Systems
                 );
             }
         }
-
     }
-
 }
