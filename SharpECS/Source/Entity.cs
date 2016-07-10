@@ -131,6 +131,17 @@ namespace SharpECS
             return match;
         }
 
+        public IComponent GetComponent(Type componentType)
+        {
+            if (!typeof(IComponent).IsAssignableFrom(componentType))
+                throw new Exception("One or more of the types you passed were not IComponent children.");
+
+            var match = Components.FirstOrDefault(c => c.GetType() == componentType);
+            if (match != null) return match;
+
+            throw new ComponentNotFoundException(this);
+        }
+
         /// <summary>
         /// Moves a component between this and "destination".
         /// If destination or the component are null, throw a ComponentNotFoundException.
