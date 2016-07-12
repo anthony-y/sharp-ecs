@@ -133,7 +133,7 @@ namespace SharpECS
 
         public IComponent GetComponent(Type componentType)
         {
-            if (!typeof(IComponent).IsAssignableFrom(componentType))
+            if (!Util.ImplementsInterface(componentType, typeof(IComponent)))
                 throw new Exception("One or more of the types you passed were not IComponent children.");
 
             var match = Components.FirstOrDefault(c => c.GetType() == componentType);
@@ -178,7 +178,7 @@ namespace SharpECS
 
         public bool HasComponent(Type componentType)
         {
-            if (!typeof(IComponent).IsAssignableFrom(componentType))
+            if (!Util.ImplementsInterface(componentType, typeof(IComponent)))
                 throw new Exception("One or more of the types you passed were not IComponent children.");
 
             var cMatch = Components.FirstOrDefault(com => com.GetType() == componentType);
