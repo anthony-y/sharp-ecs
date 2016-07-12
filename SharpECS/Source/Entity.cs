@@ -166,7 +166,7 @@ namespace SharpECS
         public void MoveComponent(IComponent component, Entity destination)
         {
             // If the component itself isn't null and its actually on "this".
-            if (component != null && Components.FirstOrDefault(com => com.GetType() == component.GetType()) != null)
+            if (component != null && HasComponent(component.GetType()))
             {
                 destination.AddComponent(component);
                 Components.Remove(component);
