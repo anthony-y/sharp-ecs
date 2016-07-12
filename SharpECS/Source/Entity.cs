@@ -214,7 +214,10 @@ namespace SharpECS
         /// </summary>
         public void RemoveAllComponents()
         {
-            foreach (var c in Components) RemoveComponent(c.GetType());
+            for (int i = Components.Count - 1; i >= 0; i--)
+            {
+                RemoveComponent(Components[i].GetType());
+            }
 
             Components.Clear();
         }
