@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using static SharpECS.Util;
 
 namespace SharpECS
 {
@@ -12,15 +11,15 @@ namespace SharpECS
         public EntityPool Pool { get; set; }
         public List<Entity> Compatible { get; set; }
 
-        private List<Type> _compatibleTypes;
+        protected List<Type> CompatibleTypes { get; private set; }
 
         public EntitySystem(EntityPool pool, params Type[] compatibleTypes)
         {
-            if (compatibleTypes.Any(t => !typeof(IComponent).IsAssignableFrom(t)))
+            if (compatibleTypes.Any(t => ImplementsInterface(t, typeof(IComponent))))
                 throw new Exception("Type passed into EntitySystem is not an IComponent!");
 
-            _compatibleTypes = new List<Type>();
-            _compatibleTypes.AddRange(compatibleTypes);
+            CompatibleTypes = new List<Type>();
+            CompatibleTypes.AddRange(compatibleTypes);
 
             Pool = pool;
 
@@ -33,6 +32,19 @@ namespace SharpECS
             Pool.EntityRemoved += OnPoolEntityChanged;
         }
 
+        public void AddCompatibleType(Type type)
+        {
+            if (ImplementsInterface(type, typeof(IComponent)))
+            {
+                CompatibleTypes.Add(type);
+
+                Compatible = GetCompatibleInPool();
+            } else
+            {
+                throw new Exception("Type passed into AddCompatibleType is not an IComponent!");
+            }
+        }
+
         private void OnPoolEntityChanged(EntityPool pool, Entity entity)
         {
             Pool = pool;
@@ -41,7 +53,7 @@ namespace SharpECS
 
         protected virtual List<Entity> GetCompatibleInPool()
         {
-            return Pool.Entities.Where(ent => ent.HasComponents(_compatibleTypes)).ToList();
+            return Pool.Entities.Where(ent => ent.HasComponents(CompatibleTypes)).ToList();
         }
     }
 }
