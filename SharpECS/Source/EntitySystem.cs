@@ -15,7 +15,7 @@ namespace SharpECS
 
         public EntitySystem(EntityPool pool, params Type[] compatibleTypes)
         {
-            if (compatibleTypes.Any(t => ImplementsInterface(t, typeof(IComponent))))
+            if (compatibleTypes.Any(t => !ImplementsInterface(t, typeof(IComponent))))
                 throw new Exception("Type passed into EntitySystem is not an IComponent!");
 
             CompatibleTypes = new List<Type>();
