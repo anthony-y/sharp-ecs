@@ -184,9 +184,9 @@ namespace SharpECS
         /// <returns></returns>
         public bool HasComponent<TComponent>() where TComponent : IComponent
         {
-            var match = Components.OfType<TComponent>().FirstOrDefault();
+            var match = Components.Any(c => c.GetType() == typeof(TComponent));
 
-            if (match != null) return true;
+            if (match) return true;
             else return false;
         }
 
