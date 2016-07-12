@@ -115,6 +115,20 @@ namespace SharpECS
             }
         }
 
+        public void RemoveComponent(Type componentType)
+        {
+            if (!Util.ImplementsInterface(componentType, typeof(IComponent)))
+                throw new Exception("One or more of the types you passed were not IComponent children.");
+
+            if (!HasComponent(componentType)) throw new ComponentNotFoundException(this);
+
+            IComponent componentToRemove = GetComponent(componentType);
+
+            Components.Remove(componentToRemove);
+            ComponentRemoved?.Invoke(this, componentToRemove);
+            OwnerPool.ComponentRemoved(this);
+        }
+
         /// <summary>
         /// Checks through Components for a component of type "T"
         /// If it doesn't have one, throw ComponentNotFoundException.
@@ -200,6 +214,8 @@ namespace SharpECS
         /// </summary>
         public void RemoveAllComponents()
         {
+            foreach (var c in Components) RemoveComponent(c.GetType());
+
             Components.Clear();
         }
 
