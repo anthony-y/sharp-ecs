@@ -101,12 +101,12 @@ namespace SharpECS
             if (_cachedEntities.Count > 0)
             {
                 newEntity = _cachedEntities.Pop();
-                _activeEntities.Add(newEntity);
 
-                if (newEntity != null && _activeEntities.Contains(newEntity))
+                if (newEntity != null)
                 {
                     newEntity.Id = entityId;
                     newEntity.OwnerPool = this;
+                    _activeEntities.Add(newEntity);
 #if DEBUG
                     Console.WriteLine($"Retrieved {newEntity.Id} from cache.");
 #endif
