@@ -38,6 +38,8 @@ namespace SharpECS.Samples
             Content.RootDirectory = "Content";
 
             IsMouseVisible = true;
+            graphics.SynchronizeWithVerticalRetrace = false;
+            IsFixedTimeStep = false;
         }
 
         protected override void Initialize()
