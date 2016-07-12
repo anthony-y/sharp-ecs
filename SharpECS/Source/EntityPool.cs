@@ -86,12 +86,9 @@ namespace SharpECS
         {
             Entity newEntity = null;
 
-            var IdMatch = this.Entities.FirstOrDefault(ent => ent.Id == entityId);
+            var IdMatch = this.Entities.Any(ent => ent.Id == entityId);
 
-            if (IdMatch != null)
-            {
-                throw new DuplicateEntityException(this);
-            }
+            if (IdMatch) throw new DuplicateEntityException(this);
 
             if (entityId == string.Empty || entityId == null || entityId.Trim() == string.Empty || entityId.Trim() == null)
             {
