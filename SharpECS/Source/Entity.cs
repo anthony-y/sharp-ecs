@@ -88,7 +88,7 @@ namespace SharpECS
         private IComponent AddComponent(IComponent component)
         {
             // If it has a component of the same type as "component".
-            if (this.Components.FirstOrDefault(com => com.GetType() == component.GetType()) != null)
+            if (HasComponent(component.GetType()))
             {
                 throw new ComponentAlreadyExistsException(this);
             }
@@ -195,7 +195,7 @@ namespace SharpECS
             if (!Util.ImplementsInterface(componentType, typeof(IComponent)))
                 throw new Exception("One or more of the types you passed were not IComponent children.");
 
-            var cMatch = Components.FirstOrDefault(com => com.GetType() == componentType);
+            var cMatch = GetComponent(componentType);
             if (cMatch != null) return true;
 
             return false;
