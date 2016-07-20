@@ -100,7 +100,8 @@ namespace SharpECS
             return component;
         }
 
-        public void RemoveComponent<T>() where T : IComponent
+        public void RemoveComponent<T>() 
+            where T : IComponent
         {
             if (this.HasComponent<T>())
             {
@@ -136,7 +137,8 @@ namespace SharpECS
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public T GetComponent<T>() where T : IComponent
+        public T GetComponent<T>()
+            where T : IComponent
         {
             var match = Components.OfType<T>().FirstOrDefault();
 
@@ -182,7 +184,8 @@ namespace SharpECS
         /// </summary>
         /// <typeparam name="TComponent"></typeparam>
         /// <returns></returns>
-        public bool HasComponent<TComponent>() where TComponent : IComponent
+        public bool HasComponent<TComponent>() 
+            where TComponent : IComponent
         {
             var match = Components.Any(c => c.GetType() == typeof(TComponent));
 
@@ -195,8 +198,8 @@ namespace SharpECS
             if (!Util.ImplementsInterface(componentType, typeof(IComponent)))
                 throw new Exception("One or more of the types you passed were not IComponent children.");
 
-            var cMatch = GetComponent(componentType);
-            if (cMatch != null) return true;
+            var cMatch = Components.Any(c => c.GetType() == componentType);
+            if (cMatch) return true;
 
             return false;
         }

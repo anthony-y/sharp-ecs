@@ -27,19 +27,10 @@ namespace SharpECS.Samples.Systems
         {
             var delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (_transforms.Count <= 0 || _controls.Count <= 0)
-            {
-                foreach (var e in Compatible)
-                {
-                    _transforms.Add(e.GetComponent<TransformComponent>());
-                    _controls.Add(e.GetComponent<ControllerComponent>());
-                }
-            }
-
             for (int i = 0; i < Compatible.Count; i++)
             {
-                var transform = _transforms[i];
-                var moveSpeed = _controls[i].MoveSpeed;
+                var transform = Compatible[i].GetComponent<TransformComponent>();
+                var moveSpeed = Compatible[i].GetComponent<ControllerComponent>().MoveSpeed;
 
                 if (Keyboard.GetState().IsKeyDown(Keys.D)) { transform.SetX(transform.Position.X + moveSpeed * delta); }
                 if (Keyboard.GetState().IsKeyDown(Keys.A)) { transform.SetX(transform.Position.X - moveSpeed * delta); }

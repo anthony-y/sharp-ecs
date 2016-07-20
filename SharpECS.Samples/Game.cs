@@ -71,9 +71,6 @@ namespace SharpECS.Samples
             var showOffCarbonCopy = playerEntity.CarbonCopy("MadeWithCarbonCopy");
             Console.WriteLine($"Id of showOffCarbonCopy: \"{showOffCarbonCopy.Id}\"");
 
-            // Should be identical to Player.
-            //showOffCarbonCopy.Components.ForEach(compo => { Console.WriteLine(compo.ToString()); });
-
             showOffCarbonCopy.CreateChild("ChildOfCC", false);
 
             showOffCarbonCopy.GetChild("ChildOfCC")
@@ -86,9 +83,6 @@ namespace SharpECS.Samples
 
             Console.WriteLine("Root entity of GrandChildOfCC (should be MadeWithCarbonCopy): " + grandChild.RootEntity.Id);
             Console.WriteLine("Root entity of Player (should be Player): " + playerEntity.RootEntity.Id);
-
-            //entityPool.Entities.ForEach(ent => { Console.WriteLine(ent.Id); });
-            //showOffCarbonCopy.Children.ForEach(child => { Console.WriteLine(child.Id); });
 
             var familyTree = showOffCarbonCopy.FamilyTree();
 
@@ -112,10 +106,6 @@ namespace SharpECS.Samples
                     Texture = Content.Load<Texture2D>("Sprite"),
                 };
             }
-
-            //entityPool.DestroyEntity(showOffCarbonCopy);
-
-            //var fromTheCache = entityPool.CreateEntity("FromTheCache");
 
             base.Initialize();
         }
@@ -147,7 +137,14 @@ namespace SharpECS.Samples
             if (mouse.RightButton == ButtonState.Pressed && previousMouse.RightButton == ButtonState.Released
                 && entityPool.DoesEntityExist(hostileEntity))
             {
-                entityPool.DestroyEntity(hostileEntity);
+                entityPool -= hostileEntity;
+
+                var wow = entityPool.CreateEntity("fromTheCaches");
+                wow.AddComponents
+                (
+                    new TransformComponent() { Position = new Vector2(120, 150) },
+                    new GraphicsComponent() { Texture = Content.Load<Texture2D>("Sprite") }
+                );
             }
 
             controllerSystem?.Update(gameTime);
