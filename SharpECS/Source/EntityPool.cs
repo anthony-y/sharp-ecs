@@ -72,8 +72,6 @@ namespace SharpECS
 
             EntityAdded?.Invoke(this, entity);
 
-            
-
             return entity;
         }
 
@@ -95,7 +93,7 @@ namespace SharpECS
                 throw new Exception("The string you entered was blank or null.");
             }
                 
-            if (_cachedEntities.Count > 0)
+            if (_cachedEntities.Any())
             {
                 newEntity = _cachedEntities.Pop();
 
@@ -104,9 +102,10 @@ namespace SharpECS
                     newEntity.Id = entityId;
                     newEntity.OwnerPool = this;
                     _activeEntities.Add(newEntity);
-#if DEBUG
-                    Console.WriteLine($"Retrieved {newEntity.Id} from cache.");
-#endif
+
+                    #if DEBUG
+                        Console.WriteLine($"Retrieved {newEntity.Id} from cache.");
+                    #endif
                 } else
                 {
                     throw new EntityNotFoundException(this);
@@ -115,9 +114,10 @@ namespace SharpECS
             {
                 newEntity = new Entity(entityId, this);
                 _activeEntities.Add(newEntity);
-#if DEBUG
-                Console.WriteLine($"Created new instance for {newEntity.Id} because the cache was empty.");
-#endif
+
+                #if DEBUG
+                    Console.WriteLine($"Created new instance for {newEntity.Id} because the cache was empty.");
+                #endif
             }
 
             EntityAdded?.Invoke(this, newEntity);
@@ -225,6 +225,11 @@ namespace SharpECS
         /// <returns></returns>
         public static EntityPool operator + (EntityPool pool, Entity entity)
         {
+            if (entity == null || !pool.DoesEntityExist(entity))
+            {
+                throw new EntityNotFoundException(pool);
+            }
+
             pool.AddEntity(entity);
 
             return pool;
@@ -238,14 +243,24 @@ namespace SharpECS
         /// <returns></returns>
         public static EntityPool operator - (EntityPool pool, Entity entity)
         {
-            if (entity != null)
-            {
-                pool.DestroyEntity(entity);
-                return pool;
-            } else
+            if (entity == null || !pool.DoesEntityExist(entity))
             {
                 throw new EntityNotFoundException(pool);
             }
+
+            pool.DestroyEntity(entity);
+            return pool;
+        }
+
+        public static EntityPool operator - (EntityPool pool, string id)
+        {
+            if (string.IsNullOrEmpty(id) || !pool.DoesEntityExist(id))
+            {
+                throw new EntityNotFoundException(pool);
+            }
+
+            pool.DestroyEntity(pool.GetEntity(id));
+            return pool;
         }
     }
 }
