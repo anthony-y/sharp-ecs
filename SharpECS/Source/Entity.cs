@@ -45,7 +45,16 @@ namespace SharpECS
         /// </summary>
         public List<Entity> Children { get; set; }
 
+        /// <summary>
+        /// The Entity which this Entity is a child of
+        /// Is null if this Entity is root
+        /// </summary>
         public Entity Parent { get; set; }
+
+        /// <summary>
+        /// Walks up all the parents of this Entity and returns the top one
+        /// This Entity is called "root"
+        /// </summary>
         public Entity RootEntity 
         {
             get 
@@ -72,6 +81,9 @@ namespace SharpECS
             }
         }
 
+        /// <summary>
+        /// Holds the current state of this Entity
+        /// </summary>
         public EntityState State { get; internal set; }
         
         internal Entity(string id, EntityPool pool)
@@ -88,6 +100,9 @@ namespace SharpECS
             State = EntityState.Active;
         }
         
+        /// <summary>
+        /// Set this Entity's state to active, providing it isn't in the cache
+        /// </summary>
         public void Activate()
         {
             if (!this.IsAvailable())
@@ -96,6 +111,9 @@ namespace SharpECS
             State = EntityState.Active;
         }
 
+        /// <summary>
+        /// Set this Entity's state to inactive, providing it isn't in the cache
+        /// </summary>
         public void Deactivate()
         {
             if (!this.IsAvailable())
@@ -105,7 +123,7 @@ namespace SharpECS
         }
 
         /// <summary>
-        /// Switches this Entity on or off
+        /// Toggles this Entity on or off
         /// </summary>
         public void Switch()
         {
@@ -139,6 +157,10 @@ namespace SharpECS
             return component;
         }
 
+        /// <summary>
+        /// Remove a component by generic type parameter and notify the appropriate Entity pool and Systems
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
         public void RemoveComponent<T>() 
             where T : IComponent
         {
@@ -158,6 +180,11 @@ namespace SharpECS
             }
         }
 
+        /// <summary>
+        /// Remove a Component by a Type parameter and notify the appropriate Entity pool and Systems
+        /// Uses runtime type checking to make sure the type you passed implements IComponent
+        /// </summary>
+        /// <param name="componentType"></param>
         public void RemoveComponent(Type componentType)
         {
             if (!this.IsAvailable())
@@ -195,6 +222,14 @@ namespace SharpECS
             return match;
         }
 
+        /// <summary>
+        /// Checks through Components for a component of type "componentType"
+        /// If it doesn't have one, throw ComponentNotFoundException.
+        /// Otherwise return the component.
+        /// Uses runtime type checking to make sure "componentType" implements IComponent
+        /// </summary>
+        /// <param name="componentType"></param>
+        /// <returns></returns>
         public IComponent GetComponent(Type componentType)
         {
             if (!this.IsAvailable())
@@ -250,6 +285,13 @@ namespace SharpECS
             else return false;
         }
 
+        /// <summary>
+        /// Checks if "this" contains a component of type "TComponent".
+        /// If it does, return true. Otherwise, return false.
+        /// Uses runtime type checking to make sure "componentType" implements IComponent
+        /// </summary>
+        /// <param name="componentType"></param>
+        /// <returns></returns>
         public bool HasComponent(Type componentType)
         {
             if (!this.IsAvailable())
@@ -264,6 +306,12 @@ namespace SharpECS
             return false;
         }
 
+        /// <summary>
+        /// Check to see if this Entity has all the components in a collection
+        /// If it does, return true, otherwise return false.
+        /// </summary>
+        /// <param name="types"></param>
+        /// <returns></returns>
         public bool HasComponents(IEnumerable<Type> types)
         {
             if (!this.IsAvailable())
@@ -313,6 +361,10 @@ namespace SharpECS
             this.State = EntityState.Cached;
         }
 
+        /// <summary>
+        /// Add all the components in a collection to this Entity
+        /// </summary>
+        /// <param name="components"></param>
         public void AddComponents(IEnumerable<IComponent> components)
         {
             foreach (var c in components) 
@@ -354,6 +406,12 @@ namespace SharpECS
             OwnerPool = pool;
         }
 
+        /// <summary>
+        /// Creates and returns a new Entity as a child under this Entity
+        /// </summary>
+        /// <param name="childId"></param>
+        /// <param name="inheritComponents"></param>
+        /// <returns></returns>
         public Entity CreateChild(string childId, bool inheritComponents=false)
         {
             if (!this.IsAvailable())
@@ -369,6 +427,11 @@ namespace SharpECS
             return child;
         }
 
+        /// <summary>
+        /// Adds an existing Entity as a child to this Entity
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
         public Entity AddChild(Entity entity)
         {
             if (!this.IsAvailable())
@@ -380,6 +443,11 @@ namespace SharpECS
             return entity;
         }
 
+        /// <summary>
+        /// Get a child by ID
+        /// </summary>
+        /// <param name="childId"></param>
+        /// <returns></returns>
         public Entity GetChild(string childId)
         {
             if (!this.IsAvailable())
@@ -388,6 +456,10 @@ namespace SharpECS
             return Children.FirstOrDefault(c => c.Id == childId);
         }
 
+        /// <summary>
+        /// Returns the whole "family tree" of this Entity (all children, "grandchildren", etc.)
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<Entity> FamilyTree()
         {
             var childSelector = new Func<Entity, IEnumerable<Entity>>(ent => ent.Children);

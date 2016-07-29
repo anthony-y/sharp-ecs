@@ -53,16 +53,13 @@ namespace SharpECS.Samples
             graphicsSystem = new GraphicsSystem(entityPool);
             controllerSystem = new ControllerSystem(entityPool);
 
-            var player = entityPool.GetEntity("Player");
-            var hostile = entityPool.GetEntity("HostileEntity");
-
             // One way of adding components.
-            player += new TransformComponent() { Position = new Vector2(200, 364) };
-            player += new GraphicsComponent() { Texture = Content.Load<Texture2D>("Sprite") };
-            player += new ControllerComponent() { MoveSpeed = 100 };
+            playerEntity += new TransformComponent() { Position = new Vector2(200, 364) };
+            playerEntity += new GraphicsComponent() { Texture = Content.Load<Texture2D>("Sprite") };
+            playerEntity += new ControllerComponent() { MoveSpeed = 100 };
 
             // Alternate way.
-            hostile.AddComponents
+            hostileEntity.AddComponents
             (
                 new GraphicsComponent() { Texture = Content.Load<Texture2D>("Sprite") },
                 new TransformComponent() { Position = new Vector2(350, 200) }
