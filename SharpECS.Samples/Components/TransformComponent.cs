@@ -23,8 +23,14 @@ namespace SharpECS.Samples.Components
             set { _position = value; }
         }
 
+        public Rectangle Rect { get; set; }
+
         public void SetX(float newX) => _position.X = newX;
         public void SetY(float newY) => _position.Y = newY;
 
+        public TransformComponent()
+        {
+            Rect = new Rectangle();
+        }
     }
 }

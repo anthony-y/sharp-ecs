@@ -6,6 +6,13 @@ using SharpECS.Exceptions;
 
 namespace SharpECS
 {
+    public enum EntityState
+    {
+        Active,
+        Inactive,
+        Cached,
+    }
+
     public sealed class Entity
     {
         /// <summary>
@@ -65,6 +72,8 @@ namespace SharpECS
             }
         }
 
+        public EntityState State { get; internal set; }
+        
         internal Entity(string id, EntityPool pool)
         {   
             Id = id;
@@ -75,6 +84,35 @@ namespace SharpECS
 
             Components = new List<IComponent>();
             Children = new List<Entity>();
+
+            State = EntityState.Active;
+        }
+        
+        public void Activate()
+        {
+            if (!this.IsAvailable())
+                return;
+
+            State = EntityState.Active;
+        }
+
+        public void Deactivate()
+        {
+            if (!this.IsAvailable())
+                return;
+
+            State = EntityState.Inactive;
+        }
+
+        /// <summary>
+        /// Switches this Entity on or off
+        /// </summary>
+        public void Switch()
+        {
+            if (!this.IsAvailable())
+                return;
+
+            State = (State == EntityState.Active ? EntityState.Inactive : EntityState.Active);
         }
         
         /// <summary>
@@ -87,11 +125,12 @@ namespace SharpECS
         /// <returns></returns>
         private IComponent AddComponent(IComponent component)
         {
+            if (!this.IsAvailable())
+                return null;
+
             // If it has a component of the same type as "component".
             if (HasComponent(component.GetType()))
-            {
                 throw new ComponentAlreadyExistsException(this);
-            }
 
             Components.Add(component);
             ComponentAdded?.Invoke(this, component);
@@ -103,6 +142,9 @@ namespace SharpECS
         public void RemoveComponent<T>() 
             where T : IComponent
         {
+            if (!this.IsAvailable())
+                return;
+
             if (this.HasComponent<T>())
             {
                 IComponent componentToRemove = GetComponent<T>();
@@ -118,6 +160,9 @@ namespace SharpECS
 
         public void RemoveComponent(Type componentType)
         {
+            if (!this.IsAvailable())
+                return;
+
             if (!Util.ImplementsInterface(componentType, typeof(IComponent)))
                 throw new Exception("One or more of the types you passed were not IComponent children.");
 
@@ -140,6 +185,9 @@ namespace SharpECS
         public T GetComponent<T>()
             where T : IComponent
         {
+            if (!this.IsAvailable())
+                return default(T);
+
             var match = Components.OfType<T>().FirstOrDefault();
 
             if (match == null) throw new ComponentNotFoundException(this);
@@ -149,6 +197,9 @@ namespace SharpECS
 
         public IComponent GetComponent(Type componentType)
         {
+            if (!this.IsAvailable())
+                return null;
+
             if (!Util.ImplementsInterface(componentType, typeof(IComponent)))
                 throw new Exception("One or more of the types you passed were not IComponent children.");
 
@@ -167,6 +218,9 @@ namespace SharpECS
         /// <param name="destination"></param>
         public void MoveComponent(IComponent component, Entity destination)
         {
+            if (!this.IsAvailable())
+                return;
+
             // If the component itself isn't null and its actually on "this".
             if (component != null && HasComponent(component.GetType()))
             {
@@ -187,6 +241,9 @@ namespace SharpECS
         public bool HasComponent<TComponent>() 
             where TComponent : IComponent
         {
+            if (!this.IsAvailable())
+                return false;
+
             var match = Components.Any(c => c.GetType() == typeof(TComponent));
 
             if (match) return true;
@@ -195,6 +252,9 @@ namespace SharpECS
 
         public bool HasComponent(Type componentType)
         {
+            if (!this.IsAvailable())
+                return false;
+
             if (!Util.ImplementsInterface(componentType, typeof(IComponent)))
                 throw new Exception("One or more of the types you passed were not IComponent children.");
 
@@ -206,6 +266,9 @@ namespace SharpECS
 
         public bool HasComponents(IEnumerable<Type> types)
         {
+            if (!this.IsAvailable())
+                return false;
+
             foreach (var t in types)
                 if (!HasComponent(t)) return false;
 
@@ -217,6 +280,9 @@ namespace SharpECS
         /// </summary>
         public void RemoveAllComponents()
         {
+            if (!this.IsAvailable())
+                return;
+
             for (int i = Components.Count - 1; i >= 0; i--)
             {
                 RemoveComponent(Components[i].GetType());
@@ -230,12 +296,21 @@ namespace SharpECS
         /// </summary>
         public void Reset()
         {
+            if (!this.IsAvailable())
+                return;
+
             RemoveAllComponents();
-            foreach (var ent in Children) { OwnerPool.DestroyEntity(ent); }
+
+            for (int i = 0; i < Children.Count; i++)
+            {
+                var child = Children[i];
+                OwnerPool.DestroyEntity(ref child);
+            }
             Children.Clear();
 
             this.Id = string.Empty;
             this.OwnerPool = null;
+            this.State = EntityState.Cached;
         }
 
         public void AddComponents(IEnumerable<IComponent> components)
@@ -252,6 +327,9 @@ namespace SharpECS
         /// <param name="components"></param>
         public void AddComponents(params IComponent[] components)
         {
+            if (!this.IsAvailable())
+                return;
+
             foreach (var c in components) 
             {
                 AddComponent(c);
@@ -264,33 +342,23 @@ namespace SharpECS
         /// <param name="pool"></param>
         public void MoveTo(EntityPool pool)
         {
-            if (pool != null)
-            {
-                pool.AddEntity(this);
-                this.OwnerPool.DestroyEntity(this);
-                this.OwnerPool = pool;
-            } else
-            {
+            if (this == null)
+                return;
+
+            if (pool == null)
                 throw new NullEntityPoolException(pool);
-            }
-        }
 
-        /// <summary>
-        /// Creates a "carbon copy" of this Entity with the Id of "newId".
-        /// </summary>
-        /// <param name="newId"></param>
-        /// <returns></returns>
-        public Entity CarbonCopy(string newId)
-        {
-            var newEntity = OwnerPool.CreateEntity(newId);
-
-            newEntity.AddComponents(Components);
-
-            return newEntity;
+            pool.AddEntity(this);
+            var me = this;
+            OwnerPool.DestroyEntity(ref me);
+            OwnerPool = pool;
         }
 
         public Entity CreateChild(string childId, bool inheritComponents=false)
         {
+            if (!this.IsAvailable())
+                return null;
+
             var child = OwnerPool.CreateEntity(childId);
 
             child.Parent = this;
@@ -303,6 +371,9 @@ namespace SharpECS
 
         public Entity AddChild(Entity entity)
         {
+            if (!this.IsAvailable())
+                return null;
+
             entity.Parent = this;
             Children.Add(entity);
 
@@ -311,6 +382,9 @@ namespace SharpECS
 
         public Entity GetChild(string childId)
         {
+            if (!this.IsAvailable())
+                return null;
+
             return Children.FirstOrDefault(c => c.Id == childId);
         }
 
@@ -336,13 +410,16 @@ namespace SharpECS
         /// <returns></returns>
         public static Entity operator + (Entity entity, IComponent component)
         {
+            if (!entity.IsAvailable())
+                return null;
+
             if (entity != null && component != null)
             {
                 entity.AddComponent(component);
                 return entity;
             } else
             {
-                throw new Exception();
+                throw new NullReferenceException();
             }
         }
     }

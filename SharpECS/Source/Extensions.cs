@@ -17,5 +17,10 @@ namespace SharpECS
                     stack.Push(child);
             }
         }
+
+        public static bool IsAvailable(this Entity entity)
+        {
+            return entity.State != EntityState.Cached;
+        }
     }
 }

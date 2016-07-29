@@ -53,58 +53,53 @@ namespace SharpECS.Samples
             graphicsSystem = new GraphicsSystem(entityPool);
             controllerSystem = new ControllerSystem(entityPool);
 
+            var player = entityPool.GetEntity("Player");
+            var hostile = entityPool.GetEntity("HostileEntity");
+
             // One way of adding components.
-            playerEntity += new TransformComponent() { Position = new Vector2(10, 20) };
-            playerEntity += new GraphicsComponent() { Texture = Content.Load<Texture2D>("Sprite") };
-            playerEntity += new ControllerComponent() { MoveSpeed = 100 };
+            player += new TransformComponent() { Position = new Vector2(200, 364) };
+            player += new GraphicsComponent() { Texture = Content.Load<Texture2D>("Sprite") };
+            player += new ControllerComponent() { MoveSpeed = 100 };
 
             // Alternate way.
-            hostileEntity.AddComponents
+            hostile.AddComponents
             (
                 new GraphicsComponent() { Texture = Content.Load<Texture2D>("Sprite") },
                 new TransformComponent() { Position = new Vector2(350, 200) }
             );
 
-            var playerTransform = playerEntity.GetComponent(typeof(TransformComponent)) as TransformComponent;
-            Console.WriteLine("Player position: " + playerTransform.Position);
+            var newEntity = entityPool.CreateEntity("NewEntity");
+            newEntity.AddComponents(new TransformComponent(), new GraphicsComponent());
 
-            var showOffCarbonCopy = playerEntity.CarbonCopy("MadeWithCarbonCopy");
-            Console.WriteLine($"Id of showOffCarbonCopy: \"{showOffCarbonCopy.Id}\"");
+            newEntity.GetComponent<TransformComponent>().Position = new Vector2(450, 320);
+            newEntity.GetComponent<GraphicsComponent>().Texture = Content.Load<Texture2D>("Sprite2");
+            newEntity.Activate();
 
-            showOffCarbonCopy.CreateChild("ChildOfCC", false);
+            Console.WriteLine("HostileEntity texture name: " + hostileEntity?.GetComponent<GraphicsComponent>()?.Texture?.Name);
 
-            showOffCarbonCopy.GetChild("ChildOfCC")
-                .CreateChild("GrandChildOfCC")
-                    .CreateChild("GreatGrandChildOfCC");
+            newEntity.CreateChild("ChildOfNew", false);
 
-            var grandChild = showOffCarbonCopy.GetChild("ChildOfCC")
-                .GetChild("GrandChildOfCC")
-                    .GetChild("GreatGrandChildOfCC");
+            newEntity.GetChild("ChildOfNew").CreateChild("GrandChildOfNew").CreateChild("GreatGrandChildOfNew");
 
-            Console.WriteLine("Root entity of GrandChildOfCC (should be MadeWithCarbonCopy): " + grandChild.RootEntity.Id);
+            var grandChild = entityPool.GetEntity("GreatGrandChildOfNew");
+
+            Console.WriteLine("Root entity of GrandChildOfNew (should be NewEntity): " + grandChild?.RootEntity?.Id);
             Console.WriteLine("Root entity of Player (should be Player): " + playerEntity.RootEntity.Id);
 
-            var familyTree = showOffCarbonCopy.FamilyTree();
+            var familyTree = newEntity.FamilyTree();
 
-            float posX = 10;
-            float posY = 10;
+            var position = new Vector2(10, 10);
+            var random = new Random();
 
             for (int i = 0; i < familyTree.Count(); i++)
             {
                 var ent = familyTree.ElementAt(i);
 
-                ent += new TransformComponent()
-                {
-                    Position = new Vector2(posX, posY)
-                };
+                ent += new GraphicsComponent() { Texture = Content.Load<Texture2D>("Sprite"), };
+                ent += new TransformComponent() { Position = new Vector2(position.X, position.Y) };
 
-                posX += 32;
-                posY += 64;
-
-                ent += new GraphicsComponent()
-                {
-                    Texture = Content.Load<Texture2D>("Sprite"),
-                };
+                position.X += 128;
+                position.Y += 272;
             }
 
             base.Initialize();
@@ -137,14 +132,20 @@ namespace SharpECS.Samples
             if (mouse.RightButton == ButtonState.Pressed && previousMouse.RightButton == ButtonState.Released
                 && entityPool.DoesEntityExist(hostileEntity))
             {
-                entityPool -= hostileEntity;
+                entityPool.DestroyEntity(ref hostileEntity);
 
-                var wow = entityPool.CreateEntity("fromTheCaches");
-                wow.AddComponents
+                var fromTheCache = entityPool.CreateEntity("FromTheCache");
+                fromTheCache.AddComponents
                 (
-                    new TransformComponent() { Position = new Vector2(120, 150) },
+                    new TransformComponent() { Position = new Vector2(300, 256) },
                     new GraphicsComponent() { Texture = Content.Load<Texture2D>("Sprite") }
                 );
+            }
+
+            if (keyboard.IsKeyDown(Keys.R) && previousKeyboard.IsKeyUp(Keys.R) 
+                    && entityPool.DoesEntityExist("Player"))
+            {
+                playerEntity.Switch();
             }
 
             controllerSystem?.Update(gameTime);

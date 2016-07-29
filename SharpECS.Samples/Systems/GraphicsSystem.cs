@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
 
 using SharpECS;
@@ -21,15 +22,23 @@ namespace SharpECS.Samples.Systems
         {
             for (int i = 0; i < Compatible.Count; i++)
             {
-                var texture = Compatible[i].GetComponent<GraphicsComponent>().Texture;
-                var position = Compatible[i].GetComponent<TransformComponent>().Position;
+                var transform = Compatible[i].GetComponent<TransformComponent>();
+                var graphics = Compatible[i].GetComponent<GraphicsComponent>();
 
-                spriteBatch.Draw
-                (
-                    texture,
-                    position,
-                    Color.White
-                );
+                transform.Rect = new Rectangle((int)transform.Position.X, (int)transform.Position.Y, graphics.Texture.Width, graphics.Texture.Height);
+
+                if (Compatible[i].State == EntityState.Active)
+                {
+                    var texture = graphics.Texture;
+                    var position = transform.Position;
+
+                    spriteBatch.Draw
+                    (
+                        texture,
+                        position,
+                        Color.White
+                    );
+                }
             }
         }
     }
