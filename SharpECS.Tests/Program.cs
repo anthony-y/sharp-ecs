@@ -26,7 +26,7 @@ namespace SharpECS.Tests
 
             timer.Restart();
 
-            pool.DestroyEntity(newEntity);
+            pool.DestroyEntity(ref newEntity);
 
             timer.Stop();
 
