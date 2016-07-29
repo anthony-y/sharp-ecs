@@ -2,9 +2,7 @@
 
 call config.bat
 
-:: devenv /build %config% SharpECS.sln
-devenv SharpECS.sln /build %config% /project "SharpECS.Samples/SharpECS.Samples.csproj" /projectconfig %config%
+devenv /build %config% SharpECS.sln
 
 cls
 echo  Build done!
-run.bat
