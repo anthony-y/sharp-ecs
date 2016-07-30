@@ -18,7 +18,7 @@ Then you need to build the project, you can do this with the .bat file provided:
 compile.bat
 ```
 
-**Note: This requires Visual Studio 2015 or newer)**
+**Note: This requires Visual Studio 2015 or newer!**
 
 This will output new binaries into the Build folder.
 
@@ -129,4 +129,178 @@ void Update()
 }
 ```
 
-And that's the basics! Keep checking back over the coming weeks and months and I will most likely be adding stuff to the library and this readme.
+Systems are very powerful because they can do anything, from rendering all your Entities to updating physics in the world. 
+See the [samples](https://github.com/anthony-y/sharp-ecs/tree/master/SharpECS.Samples) for a full demo of System usage.
+
+Entities don't have to be made before Systems, nor do Components have to be added to Entities before Systems have been made!
+This is because Systems are notified internally when anything changes, and they will rescan for Entities, so I could have easily made the system just after creating the entity pool.
+
+### What is the Entity Cache and how Does it Work?
+
+The EntityPool class is essentially what manages your Entities and gives both Systems, and you, a contained place to access them all.
+
+But there is a mechanism behind the scenes which greatly improves memory usage and, in some cases, performance by "caching" Entities instead of destroying them.
+
+When you destroy/delete/remove an Entity like so:
+
+```csharp
+entityPool.DestroyEntity(ref myEntity);
+```
+
+It is stripped of all it's components, given an empty string as an Id and has all it's children removed. In this state it is called a blank or cached Entity.
+It is then placed into a Stack of Entities where it sits until a new Entity is requested (with ```CreateEntity```). When that happens, instead of contructing a new Entity with "new", the pool
+pops an Entity off the stack, fills it's information back in and returns it.
+
+It's important to know that if we do destroy "myEntity", the variable will be made null (which is why you must pass it as ```ref```). However, you can of course reassign it to a new Entity with ```CreateEntity```.
+
+### Child Entities
+
+We can give "myEntity" a kid with just one method call!
+
+```csharp
+myEntity.CreateChild("MyEntitysChild");
+```
+
+I'm so proud! "myEntity" has now reproduced (asexually O_O) to make a beautiful new baby Entity.
+
+Now lets say "MyEntitysChild" is all grown up and of legal age and it wants to have kids too! Easy!
+
+```csharp
+myEntity.GetChild("MyEntitysChild").CreateChild("MyEntitysGrandChild");
+```
+
+There is an optional parameter for ```CreateChild``` called ```inheritComponents``` (which defaults to false).
+As you can imagine, if you pass this as true:
+
+```csharp
+myEntity.CreateChild("TheLeastFavourite", true);
+```
+
+Then the new child will recieve all the components that it's parent has.
+
+Not sure why the least favourite got the inheritance, I'm sure "MyEntitysChild" will be having words. And maybe knock a few teeth out. Unless it doesn't have a component for that.
+
+### Family tree
+
+You can walk the "family tree" of an Entity and do stuff with the family ( ͡° ͜ʖ ͡°)
+
+```csharp
+foreach (var entity in myEntity.FamilyTree())
+{
+    System.Console.WriteLine($"Entity related to {myEntity.Id}: {entity.Id} (Parent: {entity.Parent.Id}");
+}
+```
+
+### Entity State
+
+An Entity can be in 1 of 3 states at a time:
+
+- Active
+- Inactive
+- Cached
+
+The state of an Entity is controlled internally by SharpECS but is accessible from the outside with:
+
+```csharp
+EntityState myEntityState = myEntity.State;
+```
+
+SharpECS has a method for toggling an Entity between active and inactive:
+
+```csharp
+myEntity.Switch();
+```
+
+It's up to you to decide how your Systems act when Entities are in different states.
+
+Let's modify our previously created TransformSystem's update method to only print out the position of Entities which have an Active state.
+
+```csharp
+public void Update()
+{
+    // Loop through every Entity which was found with a TransformComponent on it in the specified EntityPool
+    foreach (var entity in Compatible)
+    {
+        // Make the sure the Entity is active!
+        if (entity.IsActive())
+        {
+            float X = entity.GetComponent<TransformComponent>().X;
+            float Y = entity.GetComponent<TransformComponent>().Y;
+
+            System.Console.WriteLine($"Active Entity {entity.Id} found at {X}, {Y}!");
+        }
+    }
+
+    /* 
+        Note: I recommend that you cache components to prevent slowdown grabbing the same components every frame.
+              Currently SharpECS has no built in mechanism for this.
+    */
+}
+```
+
+### Removing Components
+
+Sometimes you might want to remove a Component from an Entity at runtime. You can do this with one method call:
+
+```csharp
+myEntity.RemoveComponent<TransformComponent>();
+```
+
+Easy. You can do it without a generic too using Runtime type checking, although I don't recommend you do this as it's much slower as the above method and, as I mentioned, uses Runtime type checking instead of compiletime type checking.
+
+```csharp
+myEntity.RemoveComponent(typeof(TransformComponent));
+``` 
+
+### More Entity methods
+
+SharpECS gives you a lot of choice in how to do things, for example:
+
+Components can be retrieved in two ways:
+
+```csharp
+var transformComponent = myEntity.GetComponent(typeof(TransformComponent)) as TransformComponent;
+```
+
+or
+
+```csharp
+var transformComponent = myEntity.GetComponent<TransformComponent>();
+```
+
+I've been using the latter in these demos and I recommend you do too as it is faster and more typesafe because the type is checked at compiletime whereas the former is checked at runtime.
+
+Components can also be added in a couple of ways:
+
+```csharp
+myEntity += new MyComponent();
+myEntity += new MyOtherComponent();
+```
+
+or
+
+```csharp
+myEntity.AddComponents
+(
+    new MyComponent(),
+    new MyOtherComponent()
+);
+```
+
+or
+
+```csharp
+IComponent[] componentCollection = new IComponent[] 
+{
+    new MyComponent(),
+    new MyOtherComponent()
+}; 
+
+myEntity.AddComponents(componentCollection);
+```
+
+I encourage you to read the [code](https://github.com/anthony-y/sharp-ecs/tree/master/SharpECS/Source) for SharpECS in order to get an understand of how it works and the methods you can use for each class.
+
+#
+
+And that's the basics! Check back here every once in a while or "watch" the project on GitHub to recieve updates on the library itself and this documentation. And don't forget to star :smiley:

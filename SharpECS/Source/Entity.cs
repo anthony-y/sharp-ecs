@@ -132,7 +132,23 @@ namespace SharpECS
 
             State = (State == EntityState.Active ? EntityState.Inactive : EntityState.Active);
         }
-        
+
+        public bool IsActive()
+        {
+            if (!this.IsAvailable())
+                return false;
+
+            return (State == EntityState.Active);
+        }
+
+        public bool IsInactive()
+        {
+            if (!this.IsAvailable())
+                return false;
+
+            return (State == EntityState.Inactive);
+        }
+
         /// <summary>
         /// Checks if this already has "component"
         /// If it does, ComponentAlreadyExistsException.
