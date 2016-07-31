@@ -44,7 +44,7 @@ Next, you'll need to make an instance of EntityPool which is where you'll store 
 EntityPool entityPool = EntityPool.New("MyEntityPoolIdentifier");
 ```
 
-Create your first Entity is as easy as:
+Creating your first Entity is as easy as:
 
 ```csharp
 Entity myEntity = entityPool.CreateEntity("MyEntity");
@@ -270,7 +270,7 @@ var transformComponent = myEntity.GetComponent<TransformComponent>();
 
 I've been using the latter in these demos and I recommend you do too as it is faster and more typesafe because the type is checked at compiletime whereas the former is checked at runtime.
 
-Components can also be added in a couple of ways:
+Components can also be added in a few ways:
 
 ```csharp
 myEntity += new MyComponent();
@@ -299,7 +299,7 @@ IComponent[] componentCollection = new IComponent[]
 myEntity.AddComponents(componentCollection);
 ```
 
-I encourage you to read the [code](https://github.com/anthony-y/sharp-ecs/tree/master/SharpECS/Source) for SharpECS in order to get an understand of how it works and the methods you can use for each class.
+I encourage you to read the [code](https://github.com/anthony-y/sharp-ecs/tree/master/SharpECS/Source) for SharpECS in order to get an understanding of how it works and the methods you can use for each class.
 
 #
 
