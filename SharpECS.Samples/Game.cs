@@ -132,11 +132,14 @@ namespace SharpECS.Samples
                 entityPool.DestroyEntity(ref hostileEntity);
 
                 var fromTheCache = entityPool.CreateEntity("FromTheCache");
-                fromTheCache.AddComponents
-                (
+
+                IComponent[] components = new IComponent[]
+                {
                     new TransformComponent() { Position = new Vector2(300, 256) },
                     new GraphicsComponent() { Texture = Content.Load<Texture2D>("Sprite") }
-                );
+                };
+
+                fromTheCache.AddComponents(components);
             }
 
             if (keyboard.IsKeyDown(Keys.R) && previousKeyboard.IsKeyUp(Keys.R) 
