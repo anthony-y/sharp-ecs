@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using static SharpECS.Util;
-
 namespace SharpECS
 {
     public abstract class EntitySystem
@@ -15,7 +13,7 @@ namespace SharpECS
 
         public EntitySystem(EntityPool pool, params Type[] compatibleTypes)
         {
-            if (compatibleTypes.Any(t => !ImplementsInterface(t, typeof(IComponent))))
+            if (compatibleTypes.Any(t => !t.IsComponent()))
                 throw new Exception("Type passed into EntitySystem is not an IComponent!");
 
             CompatibleTypes = new List<Type>();
@@ -34,15 +32,11 @@ namespace SharpECS
 
         public void AddCompatibleType(Type type)
         {
-            if (ImplementsInterface(type, typeof(IComponent)))
-            {
-                CompatibleTypes.Add(type);
-
-                Compatible = GetCompatibleInPool();
-            } else
-            {
+            if (!type.IsComponent())
                 throw new Exception("Type passed into AddCompatibleType is not an IComponent!");
-            }
+
+            CompatibleTypes.Add(type);
+            Compatible = GetCompatibleInPool();
         }
 
         private void OnPoolEntityChanged(EntityPool pool, Entity entity)

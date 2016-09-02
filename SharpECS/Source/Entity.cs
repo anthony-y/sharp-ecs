@@ -60,21 +60,16 @@ namespace SharpECS
             get 
             {
                 if (this.Parent == null)
-                {
                     return this;
-                }
 
                 var parent = Parent;
 
                 while (parent != null) 
                 {
                     if (parent.Parent == null)
-                    {
                         return parent;
-                    } else
-                    {
-                        parent = parent.Parent;
-                    }
+
+                    parent = parent.Parent;
                 }
 
                 throw new Exception($"Entity \"{Id}\" has no Root!");
@@ -105,7 +100,7 @@ namespace SharpECS
         /// </summary>
         public void Activate()
         {
-            if (!this.IsAvailable())
+            if (!IsAvailable())
                 return;
 
             State = EntityState.Active;
@@ -116,7 +111,7 @@ namespace SharpECS
         /// </summary>
         public void Deactivate()
         {
-            if (!this.IsAvailable())
+            if (!IsAvailable())
                 return;
 
             State = EntityState.Inactive;
@@ -127,7 +122,7 @@ namespace SharpECS
         /// </summary>
         public void Switch()
         {
-            if (!this.IsAvailable())
+            if (!IsAvailable())
                 return;
 
             State = (State == EntityState.Active ? EntityState.Inactive : EntityState.Active);
@@ -135,7 +130,7 @@ namespace SharpECS
 
         public bool IsActive()
         {
-            if (!this.IsAvailable())
+            if (!IsAvailable())
                 return false;
 
             return (State == EntityState.Active);
@@ -143,7 +138,7 @@ namespace SharpECS
 
         public bool IsInactive()
         {
-            if (!this.IsAvailable())
+            if (!IsAvailable())
                 return false;
 
             return (State == EntityState.Inactive);
@@ -159,7 +154,7 @@ namespace SharpECS
         /// <returns></returns>
         private IComponent AddComponent(IComponent component)
         {
-            if (!this.IsAvailable())
+            if (!IsAvailable())
                 return null;
 
             // If it has a component of the same type as "component".
@@ -180,20 +175,17 @@ namespace SharpECS
         public void RemoveComponent<T>() 
             where T : IComponent
         {
-            if (!this.IsAvailable())
+            if (!IsAvailable())
                 return;
 
-            if (this.HasComponent<T>())
-            {
-                IComponent componentToRemove = GetComponent<T>();
-
-                Components.Remove(componentToRemove);
-                ComponentRemoved?.Invoke(this, componentToRemove);
-                OwnerPool.ComponentRemoved(this);
-            } else
-            {
+            if (!this.HasComponent<T>())
                 throw new ComponentNotFoundException(this);
-            }
+
+            IComponent componentToRemove = GetComponent<T>();
+
+            Components.Remove(componentToRemove);
+            ComponentRemoved?.Invoke(this, componentToRemove);
+            OwnerPool.ComponentRemoved(this);
         }
 
         /// <summary>
@@ -203,10 +195,10 @@ namespace SharpECS
         /// <param name="componentType"></param>
         public void RemoveComponent(Type componentType)
         {
-            if (!this.IsAvailable())
+            if (!IsAvailable())
                 return;
 
-            if (!Util.ImplementsInterface(componentType, typeof(IComponent)))
+            if (!componentType.IsComponent())
                 throw new Exception("One or more of the types you passed were not IComponent children.");
 
             if (!HasComponent(componentType)) throw new ComponentNotFoundException(this);
@@ -228,7 +220,7 @@ namespace SharpECS
         public T GetComponent<T>()
             where T : IComponent
         {
-            if (!this.IsAvailable())
+            if (!IsAvailable())
                 return default(T);
 
             var match = Components.OfType<T>().FirstOrDefault();
@@ -248,10 +240,10 @@ namespace SharpECS
         /// <returns></returns>
         public IComponent GetComponent(Type componentType)
         {
-            if (!this.IsAvailable())
+            if (!IsAvailable())
                 return null;
 
-            if (!Util.ImplementsInterface(componentType, typeof(IComponent)))
+            if (!componentType.IsComponent())
                 throw new Exception("One or more of the types you passed were not IComponent children.");
 
             var match = Components.FirstOrDefault(c => c.GetType() == componentType);
@@ -269,18 +261,15 @@ namespace SharpECS
         /// <param name="destination"></param>
         public void MoveComponent(IComponent component, Entity destination)
         {
-            if (!this.IsAvailable())
+            if (!IsAvailable())
                 return;
 
             // If the component itself isn't null and its actually on "this".
-            if (component != null && HasComponent(component.GetType()))
-            {
-                destination.AddComponent(component);
-                Components.Remove(component);
-            } else
-            {
+            if (component == null && !HasComponent(component.GetType()))
                 throw new ComponentNotFoundException(this);
-            }
+
+            destination.AddComponent(component);
+            Components.Remove(component);
         }
 
         /// <summary>
@@ -292,7 +281,7 @@ namespace SharpECS
         public bool HasComponent<TComponent>() 
             where TComponent : IComponent
         {
-            if (!this.IsAvailable())
+            if (!IsAvailable())
                 return false;
 
             var match = Components.Any(c => c.GetType() == typeof(TComponent));
@@ -310,10 +299,10 @@ namespace SharpECS
         /// <returns></returns>
         public bool HasComponent(Type componentType)
         {
-            if (!this.IsAvailable())
+            if (!IsAvailable())
                 return false;
 
-            if (!Util.ImplementsInterface(componentType, typeof(IComponent)))
+            if (!componentType.IsComponent())
                 throw new Exception("One or more of the types you passed were not IComponent children.");
 
             var cMatch = Components.Any(c => c.GetType() == componentType);
@@ -330,7 +319,7 @@ namespace SharpECS
         /// <returns></returns>
         public bool HasComponents(IEnumerable<Type> types)
         {
-            if (!this.IsAvailable())
+            if (!IsAvailable())
                 return false;
 
             foreach (var t in types)
@@ -344,13 +333,11 @@ namespace SharpECS
         /// </summary>
         public void RemoveAllComponents()
         {
-            if (!this.IsAvailable())
+            if (!IsAvailable())
                 return;
 
             for (int i = Components.Count - 1; i >= 0; i--)
-            {
                 RemoveComponent(Components[i].GetType());
-            }
 
             Components.Clear();
         }
@@ -360,7 +347,7 @@ namespace SharpECS
         /// </summary>
         public void Reset()
         {
-            if (!this.IsAvailable())
+            if (!IsAvailable())
                 return;
 
             RemoveAllComponents();
@@ -370,6 +357,7 @@ namespace SharpECS
                 var child = Children[i];
                 OwnerPool.DestroyEntity(ref child);
             }
+
             Children.Clear();
 
             this.Id = string.Empty;
@@ -383,10 +371,10 @@ namespace SharpECS
         /// <param name="components"></param>
         public void AddComponents(IEnumerable<IComponent> components)
         {
+            if (!IsAvailable())
+
             foreach (var c in components) 
-            {
                 AddComponent(c);
-            }
         }
 
         /// <summary>
@@ -395,13 +383,11 @@ namespace SharpECS
         /// <param name="components"></param>
         public void AddComponents(params IComponent[] components)
         {
-            if (!this.IsAvailable())
+            if (!IsAvailable())
                 return;
 
             foreach (var c in components) 
-            {
                 AddComponent(c);
-            }
         }
 
         /// <summary>
@@ -430,7 +416,7 @@ namespace SharpECS
         /// <returns></returns>
         public Entity CreateChild(string childId, bool inheritComponents=false)
         {
-            if (!this.IsAvailable())
+            if (!IsAvailable())
                 return null;
 
             var child = OwnerPool.CreateEntity(childId);
@@ -450,7 +436,7 @@ namespace SharpECS
         /// <returns></returns>
         public Entity AddChild(Entity entity)
         {
-            if (!this.IsAvailable())
+            if (!IsAvailable())
                 return null;
 
             entity.Parent = this;
@@ -466,7 +452,7 @@ namespace SharpECS
         /// <returns></returns>
         public Entity GetChild(string childId)
         {
-            if (!this.IsAvailable())
+            if (!IsAvailable())
                 return null;
 
             return Children.FirstOrDefault(c => c.Id == childId);
@@ -478,6 +464,7 @@ namespace SharpECS
         /// <returns></returns>
         public IEnumerable<Entity> FamilyTree()
         {
+            // Thanks @deccer
             var childSelector = new Func<Entity, IEnumerable<Entity>>(ent => ent.Children);
 
             var stack = new Stack<Entity>(Children);
@@ -509,6 +496,11 @@ namespace SharpECS
             {
                 throw new NullReferenceException();
             }
+        }
+
+        public bool IsAvailable()
+        {
+            return State != EntityState.Cached;
         }
     }
 }

@@ -61,7 +61,7 @@ namespace SharpECS.Samples
             // Alternate way.
             hostileEntity.AddComponents
             (
-                new GraphicsComponent() { Texture = Content.Load<Texture2D>("Sprite") },
+                new GraphicsComponent() { Texture = Content.Load<Texture2D>("Sprite2") },
                 new TransformComponent() { Position = new Vector2(350, 200) }
             );
 
@@ -70,7 +70,6 @@ namespace SharpECS.Samples
 
             newEntity.GetComponent<TransformComponent>().Position = new Vector2(450, 320);
             newEntity.GetComponent<GraphicsComponent>().Texture = Content.Load<Texture2D>("Sprite2");
-            newEntity.Activate();
 
             Console.WriteLine("HostileEntity texture name: " + hostileEntity?.GetComponent<GraphicsComponent>()?.Texture?.Name);
 
@@ -122,9 +121,7 @@ namespace SharpECS.Samples
 
             if (mouse.LeftButton == ButtonState.Pressed && previousMouse.LeftButton == ButtonState.Released
                 && entityPool.DoesEntityExist(hostileEntity))
-            {
-                hostileEntity.GetComponent<TransformComponent>().Position = new Vector2(mouse.Position.X - 16, mouse.Position.Y - 16);
-            }
+                    hostileEntity.GetComponent<TransformComponent>().Position = new Vector2(mouse.Position.X - 16, mouse.Position.Y - 16);
 
             if (mouse.RightButton == ButtonState.Pressed && previousMouse.RightButton == ButtonState.Released
                 && entityPool.DoesEntityExist(hostileEntity))
@@ -144,9 +141,7 @@ namespace SharpECS.Samples
 
             if (keyboard.IsKeyDown(Keys.R) && previousKeyboard.IsKeyUp(Keys.R) 
                     && entityPool.DoesEntityExist("Player"))
-            {
-                playerEntity.Switch();
-            }
+                        playerEntity.Switch();
 
             controllerSystem?.Update(gameTime);
 
